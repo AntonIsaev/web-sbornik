@@ -1,0 +1,33 @@
+<% if user_signed_in? %>
+  <% if Journal.where('user_id = '+current_user.id.to_s).count != 0 %>
+    <h3><%= t('users.journals.title', :default => t('en.users.journals.title')) %></h3>
+    <div class="list-group">
+      <% Journal.where('user_id = '+current_user.id.to_s).each do |journal| %>
+        <a href="<%= journal_path(journal) %>" class="list-group-item">
+          <strong><%= journal.title %></strong>
+        </a>
+      <% end %>
+    </div>
+  <% end %>
+  
+  <% if Urole.where('user_id = '+current_user.id.to_s).count != 0 %>
+    <h3><%= t('users.journals.title', :default => t('en.users.journals.title')) %></h3>
+    <div class="list-group">
+      <% Urole.where('user_id = '+current_user.id.to_s).each do |urole| %>
+        <% publication = Publication.find(urole.publication_id) %>
+        <% if publication != nil %>
+          <a href="<%= journal_publication_path(publication.journal, publication) %>" class="list-group-item">
+            <strong><%= publication.title %> | <%= publication.journal.title %></strong>
+          </a>
+          <a href="<%= journal_publication_path(publication.journal, publication) %>" class="list-group-item col-lg-3">
+            <%= t('helpers.links.open') %>
+          </a>
+          <a href="<%= journal_publication_articles_path(publication.journal, publication) %>" class="list-group-item col-lg-9">
+            <%= t('publications.show.articlesbutton') %>
+          </a>
+        <% end %>  
+      <% end %>
+    </div>
+  <% end %>
+  
+<% end %>  

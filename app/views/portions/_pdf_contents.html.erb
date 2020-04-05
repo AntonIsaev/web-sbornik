@@ -1,0 +1,169 @@
+<div class="list-group">
+  <a href="#", class="list-group-item">
+    <h4 class="list-group-item-heading">
+    <%= t('portions.pdf.contents.begin_forming') %>
+    </h4>
+  </a>  
+<% 
+  $errors = []
+  if global_param('auto_convert_to_pdf') == '0'
+    $errors << [t('global_params.pdf_disabled'), '', '']
+  else	
+  
+  require 'prawn/measurement_extensions'
+  require 'fileutils'
+  
+  info = {
+    :Title => "Contents for "+@journal.title+" ("+@publication.title+")",
+    :Author => t('appname'),
+    :Subject => @journal.title,
+    :Keywords => "web-sbornik journal",
+    :Creator => "http://www.web-sbornik.ru",
+    :Producer => "Prawn",
+    :CreationDate => Time.now
+  }
+  
+  portion = @publication.portions.where('ftype = 9').first
+  if portion.name_in_contents != ''
+    fCaption = portion.name_in_contents
+  else
+    fCaption = t("portions.types.t"+portion.ftype.to_s)
+  end  
+
+  # two-passing form: 1st - calculating pages count in contents, 2nd - numbering all sections
+  $i = 0
+  
+  while $i < 2
+  
+  fData = []
+  fPagesCount = 1
+
+  @publication.portions.order('position').each do |portion|
+    if ((portion.file == nil) || (portion.file.path == nil) || (portion.file.path == '')) && ((portion.file_pdf == nil) || (portion.file_pdf.path == nil) || (portion.file_pdf.path == ''))
+      $errors << [t('portions.pdf.contents.end_error_publication_portion_no_file', :default => t('en.portions.pdf.contents.end_error_publication_portion_no_file')), t("portions.types.t"+portion.ftype.to_s) + ' (' + @publication.title + ')', journal_publication_portion_path(@journal, @publication, portion)]  
+    end
+    
+    if portion.add_to_contents == 1 && portion.ftype != 6
+      if portion.name_in_contents != ''
+        s = portion.name_in_contents
+      else  
+        s = t("portions.types.t"+portion.ftype.to_s)
+      end
+      
+      fData << [s, {:content => fPagesCount.to_s, :valign => :bottom, :align => :right}]
+      if portion.is_numbering < 2
+        fPagesCount += portion.pages_count
+      end  
+    elsif portion.ftype == 6
+      #TODO: articles sort!!! add 'position' and allow to sort articles. Or sort here: by authors - first, article title - second
+      if @publication.articles.count == 0
+        $errors << [t('portions.pdf.contents.end_error_zero_articles', :default => t('en.portions.pdf.contents.end_error_zero_articles')), @publication.title, journal_publication_path(@journal, @publication)]
+      end
+
+      @publication.articles.each do |article|
+        s = ''
+        @material = article.materials.first
+        
+        if @material != nil 
+          if @material.checked_by_author_id == 0
+            $errors << [t('portions.pdf.contents.end_error_not_checked_by_author', :default => t('en.portions.pdf.contents.end_error_not_checked_by_author')), article.title + ' (' +article.full_authors+')', journal_publication_article_path(@journal, @publication, article)]
+          end
+    
+          if @material.checked_by_chief_id == 0 && @material.checked_by_chief_assistant_id == 0
+            $errors << [t('portions.pdf.contents.end_error_not_checked_by_chief_or_assistant', :default => t('en.portions.pdf.contents.end_error_not_checked_by_chief_or_assistant')), article.title + ' (' +article.full_authors+')', journal_publication_article_path(@journal, @publication, article)]
+          end
+        
+          if !@material.file.blank? || !@material.file_pdf.blank?
+            s = '<i>'
+            if article.authors.count == 0
+              $errors << [t('portions.pdf.contents.end_error_no_authors', :default => t('en.portions.pdf.contents.end_error_no_authors')), article.title,journal_publication_article_path(@journal, @publication, article)]  
+            else  
+              article.authors.each do |author|
+                s = s + author.name_with_initial+', '
+              end
+            end  
+            s = s.chomp(', ')+'</i><br>'+article.title
+            if File.extname(@material.file_pdf.path).downcase == '.pdf'
+              reader = PDF::Reader.new(@material.file_pdf.path)
+              fData << [s, {:content => fPagesCount.to_s, :valign => :bottom, :align => :right}]
+              fPagesCount += reader.page_count
+            elsif File.extname(@material.file.path).downcase == '.pdf'
+              reader = PDF::Reader.new(@material.file.path)
+              fData << [s, {:content => fPagesCount.to_s, :valign => :bottom, :align => :right}]
+              fPagesCount += reader.page_count
+            else
+              $errors << [t('portions.pdf.contents.end_error_file_not_pdf', :default => t('en.portions.pdf.contents.end_error_file_not_pdf')),  article.title + ' (' +article.full_authors+')',journal_publication_article_path(@journal, @publication, article)]  
+              fData << [s, {:content => "0", :valign => :bottom, :align => :right}]
+            end  
+          else
+            $errors << [t('portions.pdf.contents.end_error_no_file', :default => t('en.portions.pdf.contents.end_error_no_file')), article.title + ' (' +article.full_authors+')',journal_publication_article_path(@journal, @publication, article)]  
+          end
+        else  
+          $errors << [t('portions.pdf.contents.end_error_no_file', :default => t('en.portions.pdf.contents.end_error_no_file')), article.title + ' (' +article.full_authors+')',journal_publication_article_path(@journal, @publication, article)]  
+        end
+      end  
+    else  # do not add to contents + not an articles section => just add pages count to total pages count
+      if portion.is_numbering < 2
+        fPagesCount += portion.pages_count
+      end  
+    end    
+  end
+  
+  Dir.mktmpdir() do |dir|
+  pdf_filename = '/contents.pdf'
+
+  Prawn::Document.generate(dir + pdf_filename, :info => info, :page_size => "A4", :margin => [30.mm, 23.mm, 30.mm, 23.mm]) do
+  
+    font_families.update("Times-New-Roman" => {
+      :normal => Rails.root.join('public/fonts/TIMES.TTF').to_s,
+      :italic => Rails.root.join('public/fonts/TIMESI.TTF').to_s,
+      :bold => Rails.root.join('public/fonts/TIMESBD.TTF').to_s,
+      :bold_italic => Rails.root.join('public/fonts/TIMESBI.TTF').to_s
+    })
+  
+    font "Times-New-Roman"
+    line_width = 0.5
+    horizontal_line 1.mm, 165.mm, :at => 242.mm
+    
+    pad_top(4) {
+    text '<b>'+fCaption.mb_chars.upcase+'</b>', :size => 14, :align => :center, :inline_format => true
+    }
+    
+    table(fData, :column_widths => {1 => 30}, :cell_style => { :inline_format => true, :padding => [2, 5, 3, 5]}) do |t|
+      t.before_rendering_page do |page|
+        page.row(0).border_top_width = 0
+        page.row(-1).border_bottom_width = 0
+        page.column(0).border_left_width = 0
+        page.column(0).border_right_width = 0
+        page.column(-1).border_right_width = 0
+        page.column(-1).border_left_width = 0
+      end
+    end
+  end  
+  
+  File.open(dir+pdf_filename) do |f|
+    portion.file = nil
+    portion.file = f
+    portion.save
+    
+    reader = PDF::Reader.new(portion.file.path)
+    portion.pages_count = reader.page_count
+    portion.save
+  end
+  end
+  
+  $i += 1
+
+  end
+  end
+ %>
+
+ <% if $errors.size == 0 %>
+    <%= link_to t('portions.pdf.contents.end_success', :default => t('en.portions.pdf.contents.end_success')), '#', :class => 'list-group-item list-group-item-success' %>
+  </a>  
+  <% else %>
+    <% $errors.each do |error| %>
+      <%= link_to error[0]+' '+error[1], error[2], :class => 'list-group-item list-group-item-danger' %>
+    <% end %>
+  <% end %>  
+</div>

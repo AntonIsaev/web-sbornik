@@ -1,0 +1,89 @@
+<%= form_for @institution, :html => { :class => "form-horizontal institution" } do |f| %>
+
+  <% if @institution.errors.any? %>
+    <div id="error_expl" class="panel panel-danger">
+      <div class="panel-heading">
+        <h3 class="panel-title"><%= pluralize(@institution.errors.count, "error") %> prohibited this institution from being saved:</h3>
+      </div>
+      <div class="panel-body">
+        <ul>
+        <% @institution.errors.full_messages.each do |msg| %>
+          <li><%= msg %></li>
+        <% end %>
+        </ul>
+      </div>
+    </div>
+  <% end %>
+
+  <div class="form-group">
+    <%= f.label :title, :class => 'control-label col-lg-2' %>
+    <div class="col-lg-10">
+      <%= f.text_field :title, :class => 'form-control', :placeholder => t('institutions.new.title_placeholder', :default => '') %>
+    </div>
+    <%=f.error_span(:title) %>
+  </div>
+  <div class="form-group">
+    <%= f.label :titleingenitive, :class => 'control-label col-lg-2' %>
+    <div class="col-lg-10">
+      <%= f.text_field :titleingenitive, :class => 'form-control', :placeholder => t('institutions.new.title_in_genitive_placeholder', :default => '') %>
+    </div>
+    <%=f.error_span(:titleingenitive) %>
+  </div>
+  <div class="form-group">
+    <%= f.label :postaddress, :class => 'control-label col-lg-2' %>
+    <div class="col-lg-10">
+      <%= f.text_field :postaddress, :class => 'form-control', :placeholder => t('institutions.new.postaddress_placeholder', :default => '') %>
+    </div>
+    <%=f.error_span(:postaddress) %>
+  </div>
+  <div class="form-group">
+    <%= f.label :webaddress, :class => 'control-label col-lg-2' %>
+    <div class="col-lg-10">
+      <%= f.text_field :webaddress, :class => 'form-control', :placeholder => t('institutions.new.webaddress_placeholder', :default => '') %>
+    </div>
+    <%=f.error_span(:webaddress) %>
+  </div>
+  
+  <% if params[:journal_id] != nil %> 
+    <%= hidden_field_tag(:journal_id, params[:journal_id]) %>
+    <%= hidden_field_tag(:publication_id, params[:publication_id]) %>
+    <%= hidden_field_tag(:article_id, params[:article_id]) %>
+  <% end %>
+
+  <% if params[:author_id] != nil %>
+    <%= hidden_field_tag(:author_id, params[:author_id]) %>
+  <% end %>
+
+  <% if params[:degree_id] != nil %>
+    <%= hidden_field_tag(:degree_id, params[:degree_id]) %>
+  <% end %>
+
+  <div class="form-group">
+    <div class="col-lg-offset-2 col-lg-10">
+      <% if @institution.title? %>
+        <%= f.submit t('institutions.edit.button', :default => 'Edit institution'), :class => 'btn btn-primary' %>
+      <% else %>
+        <%= f.submit t('institutions.new.button', :default => "New institution"), :class => 'btn btn-primary' %>
+      <% end %>
+      
+      <% if params[:author_id] != nil %> 
+        <% @author = Author.find(params[:author_id]) %>
+        <% if params[:degree_id] != nil %> 
+          <% @degree = @author.degrees.find(params[:degree_id]) %>
+          <% @journal = Journal.find(params[:journal_id]) %>
+          <% @publication = @journal.publications.find(params[:publication_id]) %>
+          <% @article = @publication.articles.find(params[:article_id]) %> 
+          <%= link_to t('.cancel', :default => t("helpers.links.cancel")),
+                      edit_author_degree_path(@author, @degree, :journal_id => @journal.id, :publication_id => @publication.id, :article_id => @article.id, :institution_id => @institution.id), :class => 'btn btn-default' %>
+        <% else %>              
+          <%= link_to t('.cancel', :default => t("helpers.links.cancel")),
+                      new_author_degree_path(@author), :class => 'btn btn-default' %>
+        <% end %>
+      <% else %>              
+        <%= link_to t('.cancel', :default => t("helpers.links.cancel")),
+                    institutions_path, :class => 'btn btn-default' %>
+      <% end %>
+    </div>
+  </div>
+
+<% end %>

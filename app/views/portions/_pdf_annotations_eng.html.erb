@@ -1,0 +1,123 @@
+<div class="list-group">
+  <a href="#", class="list-group-item">
+    <h4 class="list-group-item-heading">
+    <%= t('portions.pdf.annotations_eng.begin_forming', :default => t('en.portions.pdf.annotations_eng.begin_forming')) %>
+    </h4>
+  </a>  
+  
+<% $errors = []
+  if global_param('auto_convert_to_pdf') == '0'
+    $errors << [t('global_params.pdf_disabled'), '', '']
+  else	
+  
+  require 'prawn/measurement_extensions'
+  
+  info = {
+    :Title => "List of authors with degrees for "+@journal.title+" ("+@publication.title+")",
+    :Author => t('appname'),
+    :Subject => @journal.title,
+    :Keywords => "web-sbornik journal",
+    :Creator => "http://www.web-sbornik.ru",
+    :Producer => "Prawn",
+    :CreationDate => Time.now
+  }
+  
+  portion = @publication.portions.where('ftype = 7').first
+  p = @publication
+  if portion.name_in_contents != ''
+    fCaption = portion.name_in_contents
+  else
+    fCaption = t("portions.types.t"+portion.ftype.to_s)
+  end  
+
+  Dir.mktmpdir() do |dir|
+ 
+  pdf_filename = '/annotations_eng.pdf'
+  
+  if p.articles.count == 0
+    $errors << [t('portions.pdf.annotations_eng.end_error_zero_articles', :default => t('en.portions.pdf.annotations_eng.end_error_zero_articles')), @publication.title, journal_publication_path(@journal, @publication)]
+  end
+  
+  # TODO: sorting!!!
+  p.articles.each do |article|
+    if (article.title_en == '') || (article.title_en == nil)
+      $errors << [t('portions.pdf.annotations_eng.end_error_no_title', :default => t('en.portions.pdf.annotations_eng.end_error_no_title')), article.title+' ('+article.full_authors+')', journal_publication_article_path(@journal, @publication, article)]
+    end  
+
+    if article.authors.count == 0
+      $errors << [t('portions.pdf.annotations_eng.end_error_no_authors', :default => t('en.portions.pdf.annotations_eng.end_error_no_authors')), article.title, journal_publication_article_path(@journal, @publication, article)]
+    end  
+
+    if (article.annotation_en == '') || (article.annotation_en == nil)
+      $errors << [t('portions.pdf.annotations_eng.end_error_no_abstract', :default => t('en.portions.pdf.annotations_eng.end_error_no_abstract')), article.title+' ('+article.full_authors+')', journal_publication_article_path(@journal, @publication, article)]
+    end  
+
+    if (article.keywords_en == '') || (article.keywords_en == nil)
+      $errors << [t('portions.pdf.annotations_eng.end_error_no_keywords', :default => t('en.portions.pdf.annotations_eng.end_error_no_keywords')), article.title+' ('+article.full_authors+')', journal_publication_article_path(@journal, @publication, article)]
+    end  
+  end
+  
+  Prawn::Document.generate(dir + pdf_filename, :info => info, :page_size => "A4", :margin => [30.mm, 23.mm, 30.mm, 23.mm]) do
+  
+    font_families.update("Times-New-Roman" => {
+      :normal => Rails.root.join('public/fonts/TIMES.TTF').to_s,
+      :italic => Rails.root.join('public/fonts/TIMESI.TTF').to_s,
+      :bold => Rails.root.join('public/fonts/TIMESBD.TTF').to_s,
+      :bold_italic => Rails.root.join('public/fonts/TIMESBI.TTF').to_s
+    })
+  
+    font "Times-New-Roman"
+    line_width = 0.5
+    horizontal_line 1.mm, 165.mm, :at => 242.mm
+    
+    pad_top(4) {
+    text '<b>'+fCaption.mb_chars.upcase+'</b>', :size => 14, :align => :center, :inline_format => true
+    }
+    
+    # TODO: sorting!!!
+    p.articles.each do |article|
+      pad(30) {
+        if article.title_en != nil
+          text '<b>'+article.title_en.upcase+'</b>', :size => 11, :align => :center, :inline_format => true
+        else  
+          text '<b>'+article.title.upcase+'</b>', :size => 11, :align => :center, :inline_format => true
+        end
+
+        text article.full_authors_en, :size => 11, :align => :center, :inline_format => true
+        text ' ', :size => 11, :align => :justify, :inline_format => true
+        if article.annotation_en != nil
+          text '<b>Abstract: </b>'+article.annotation_en, :size => 11, :align => :justify, :inline_format => true
+        else  
+          text '<b>Abstract: </b>', :size => 11, :align => :justify, :inline_format => true
+        end
+        if article.keywords_en != nil  
+          text '<i>Keywords: '+article.keywords_en+'</i>', :size => 11, :align => :justify, :inline_format => true
+        else  
+          text '<i>Keywords: </i>', :size => 11, :align => :justify, :inline_format => true
+        end  
+      }
+    end
+  end 
+
+  File.open(dir + pdf_filename) do |f|
+    portion.file = nil
+    portion.file = f
+    portion.save
+
+    reader = PDF::Reader.new(portion.file.path)
+    portion.pages_count = reader.page_count
+    portion.save
+  end
+  end
+  end
+ %>
+
+  <% if $errors.size == 0 %>
+    <%= link_to t('portions.pdf.annotations_eng.end_success', :default => t('en.portions.pdf.annotations_eng.end_success')), '#', :class => 'list-group-item list-group-item-success' %>
+  <% else %>
+    <% $errors.each do |error| %>
+      <%= link_to error[0]+' '+error[1], error[2], :class => 'list-group-item list-group-item-danger' %>
+    <% end %>
+  <% end %>  
+
+</div>

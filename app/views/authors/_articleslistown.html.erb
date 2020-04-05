@@ -1,0 +1,33 @@
+<ul class="list-group">
+ 
+  <%# list of articles where this author is an owner %>
+  
+  <% author_has_no_articles_flag = 0 %>
+  <% @articles = Article.where('user_id = '+current_user.id.to_s) %>
+  <% @articles.each do |article| %>
+    <% @paternities = Paternity.where('article_id = '+article.id.to_s) %>
+    
+    <% if @show_not_published %>
+      <% can_show_article = article.publication.publication_status_id == 1 %>
+    <% else %>  
+      <% can_show_article = article.publication.publication_status_id == 2 %>
+    <% end %>
+
+    <% if can_show_article %>
+      <% author_has_no_articles_flag = 1 %>
+      <% @article = article %>
+      <%= render 'authors/articleslist_render' %>
+    <% end %>
+  <% end %>
+  
+  <% if author_has_no_articles_flag == 0 %>
+    <li class="list-group-item list-group-item-warning">
+      <% if @show_not_published %>
+        <%= t('authors.show.articles.unpublished_empty_own', :default => "this author has no article in preparing publications yet.") %>   
+      <% else %>  
+        <%= t('authors.show.articles.published_empty_own', :default => "this author has no published articles yet.") %>   
+      <% end %>
+    </li>
+  <% end %>
+
+</ul>

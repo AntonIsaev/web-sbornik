@@ -1,0 +1,46 @@
+<table>
+  <tr>
+    <td>Статья автора</td>
+    <td>файлы со ссылками Удалить и примечаниями</td>
+    <td>Добавить</td>
+  </tr>
+
+  <tr>
+    <td>Аннотация на английском языке</td>
+    <td>файлы со ссылками Удалить и примечаниями</td>
+    <td>Добавить</td>
+  </tr>
+
+  <tr>
+    <td>Сведения об авторах</td>
+    <td>файлы со ссылками Удалить и примечаниями</td>
+    <td>Добавить</td>
+  </tr>
+
+  <tr>
+    <td>Лицензионный договор</td>
+    <td>файлы со ссылками Удалить и примечаниями</td>
+    <td>Добавить</td>
+  </tr>
+
+  <tr>
+    <td>Экспертное заключение</td>
+    <td>файлы со ссылками Удалить и примечаниями</td>
+    <td>Добавить</td>
+  </tr>
+
+</table>
+
+<p>
+<% if comment.file_file_name != nil %>
+  <strong><%= link_to comment.file_file_name, comment.file.url %></strong> 
+  <%= comment.comment_type_id %> (Загружено: <%= comment.created_at %>)
+<% else %>
+  <strong><%= comment.commenter %></strong> :
+<% end %>
+<%= comment.body %>
+| 
+  <%= link_to 'Удалить', [comment.article, comment],
+  method: :delete,
+  data: { confirm: 'Подтвердите удаление приложения'} %>
+</p>

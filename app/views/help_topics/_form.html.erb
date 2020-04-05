@@ -1,0 +1,81 @@
+<%= form_for @help_topic, :html => { :class => "form-horizontal help_topic" } do |f| %>
+
+  <% if @help_topic.errors.any? %>
+    <div id="error_expl" class="panel panel-danger">
+      <div class="panel-heading">
+        <h3 class="panel-title"><%= pluralize(@help_topic.errors.count, "error") %> prohibited this help_topic from being saved:</h3>
+      </div>
+      <div class="panel-body">
+        <ul>
+        <% @help_topic.errors.full_messages.each do |msg| %>
+          <li><%= msg %></li>
+        <% end %>
+        </ul>
+      </div>
+    </div>
+  <% end %>
+
+  <div class="form-group">
+    <%= f.label :for_item, :class => 'control-label col-lg-2' %>
+    <div class="col-lg-10">
+      <%= f.text_field :for_item, :class => 'form-control' %>
+    </div>
+    <%=f.error_span(:for_item) %>
+  </div>
+  
+  <div class="form-group">
+    <%= f.label :title, :class => 'control-label col-lg-2' %>
+    <div class="col-lg-10">
+      <%= f.text_field :title, :class => 'form-control' %>
+    </div>
+    <%=f.error_span(:title) %>
+  </div>
+  <div class="form-group">
+    <%= f.label :short_text, :class => 'control-label col-lg-2' %>
+    <div class="col-lg-10">
+      <%= f.text_field :short_text, :class => 'form-control' %>
+    </div>
+    <%=f.error_span(:short_text) %>
+  </div>
+  <div class="form-group">
+    <%= f.label :long_text, :class => 'control-label col-lg-2' %>
+    <div class="col-lg-10">
+      <%= f.text_field :long_text, :class => 'form-control' %>
+    </div>
+    <%=f.error_span(:long_text) %>
+  </div>
+  
+  <div class="form-group">
+    <%= f.label :parent_id, :class => 'control-label col-lg-2' %>
+    <div class="col-lg-10">
+      <%= select  :help_topic_parent,
+                  :id,
+                  @help_topics.order(:id).collect{|f| [ f.title, f.id ]},
+                  {:include_blank => t('help_topics.new.first'), :selected => @help_topic.parent_id},
+                  :onChange => 'parent_change()',
+                  :class => 'form-control' %>
+    </div>
+    <%=f.error_span(:parent_id) %>
+  </div>
+  
+  <div class="form-group">
+    <%= f.label :help_topic_neighbour, :class => 'control-label col-lg-2' %>
+    <div class="col-lg-10">
+      <%= select  :help_topic_neighbour,
+                  :id,
+				  [],
+                  {include_blank: true},
+                  :class => 'form-control' %>
+    </div>
+    <%=f.error_span(:neighbour_id) %>
+  </div>
+
+  <div class="form-group">
+    <div class="col-lg-offset-2 col-lg-10">
+      <%= f.submit nil, :class => 'btn btn-primary' %>
+      <%= link_to t('.cancel', :default => t("helpers.links.cancel")),
+                help_topics_path, :class => 'btn btn-default' %>
+    </div>
+  </div>
+
+<% end %>

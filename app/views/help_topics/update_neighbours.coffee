@@ -1,0 +1,1 @@
+$("#help_topic_neighbour_id").empty().append("<%= escape_javascript(render(:partial => 'neighbours')) %>")

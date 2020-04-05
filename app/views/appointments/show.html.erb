@@ -1,0 +1,33 @@
+<%- model_class = Appointment -%>
+<div class="page-header">
+  <h1><%=t '.title', :default => model_class.model_name.human.titleize %></h1>
+</div>
+
+<dl class="dl-horizontal">
+  <dt><strong><%= model_class.human_attribute_name(:chief_id) %>:</strong></dt>
+  <dd><%= @appointment.chief_id %></dd>
+  <dt><strong><%= model_class.human_attribute_name(:user_id_set) %>:</strong></dt>
+  <dd><%= @appointment.user_id_set %></dd>
+  <dt><strong><%= model_class.human_attribute_name(:user_id) %>:</strong></dt>
+  <dd><%= @appointment.user_id %></dd>
+  <dt><strong><%= model_class.human_attribute_name(:article_id) %>:</strong></dt>
+  <dd><%= @appointment.article_id %></dd>
+  <dt><strong><%= model_class.human_attribute_name(:date_plan) %>:</strong></dt>
+  <dd><%= @appointment.date_plan %></dd>
+  <dt><strong><%= model_class.human_attribute_name(:date_fact) %>:</strong></dt>
+  <dd><%= @appointment.date_fact %></dd>
+  <dt><strong><%= model_class.human_attribute_name(:comment) %>:</strong></dt>
+  <dd><%= @appointment.comment %></dd>
+  <dt><strong><%= model_class.human_attribute_name(:score) %>:</strong></dt>
+  <dd><%= @appointment.score %></dd>
+</dl>
+
+<%= link_to t('.back', :default => t("helpers.links.back")),
+              appointments_path, :class => 'btn btn-default'  %>
+<%= link_to t('.edit', :default => t("helpers.links.edit")),
+              edit_appointment_path(@appointment), :class => 'btn btn-default' %>
+<%= link_to t('.destroy', :default => t("helpers.links.destroy")),
+              appointment_path(@appointment),
+              :method => 'delete',
+              :data => { :confirm => t('.confirm', :default => t("helpers.links.confirm", :default => 'Are you sure?')) },
+              :class => 'btn btn-danger' %>

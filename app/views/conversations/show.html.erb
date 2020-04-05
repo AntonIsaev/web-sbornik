@@ -1,0 +1,21 @@
+<h1><%= @conversation.subject %></h1>
+
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <%= @conversation.subject %>
+  </div>  
+
+  <div class="panel-body">
+    <div class="messages">
+      <% @conversation.receipts_for(current_user).each do |receipt| %>
+        <% message = receipt.message %>
+
+        <small><div style="float:right">| <%= @conversation.created_at.strftime("%-d %B %Y, %H:%M:%S") %></div>
+        <strong><div><%= message.sender.display_name %></div></strong></small>
+        
+        <%= message.body.html_safe %>
+        
+      <% end %>
+    </div> 
+  </div>
+</div>

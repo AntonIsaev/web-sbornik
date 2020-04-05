@@ -1,0 +1,17 @@
+<%- model_class = HelpTopic -%>
+<% provide(:title, t('help_topics.index.title')) %>
+
+<div class="col-lg-4 col-md-4" style="padding-top:50px;">
+  <%= draw_help_menu(@help_topics, nil, true) %>
+</div>
+<div class="col-lg-8 col-md-8">
+  <h1><%= t('help_topics.index.title') %></h1>
+  <p><%= t('help_topics.index.text1') %></p>
+  <p><%= t('help_topics.index.text2') %></p>
+  <p><%= t('help_topics.index.text3') %><a href="mailto:<%= global_param('app_email') %>"><%= global_param('app_email') %></a></p>
+  <% if is_user_super_admin %>
+    <%= link_to t('helpers.links.new'),
+                new_help_topic_path,
+                :class => 'btn btn-primary' %>
+  <% end %>			  
+</div>  

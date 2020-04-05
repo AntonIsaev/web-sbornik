@@ -1,0 +1,99 @@
+<%= form_for @author, :html => { :class => "form-horizontal author" } do |f| %>
+
+  <% if @author.errors.any? %>
+    <div id="error_expl" class="panel panel-danger">
+      <div class="panel-heading">
+        <h3 class="panel-title"><%= pluralize(@author.errors.count, "error") %> prohibited this author from being saved:</h3>
+      </div>
+      <div class="panel-body">
+        <ul>
+        <% @author.errors.full_messages.each do |msg| %>
+          <li><%= msg %></li>
+        <% end %>
+        </ul>
+      </div>
+    </div>
+  <% end %>
+
+  <div class="form-group">
+    <%= f.label :surname, :class => 'control-label col-lg-2' %>
+    <div class="col-lg-10">
+      <%= f.text_field :surname, :class => 'form-control' %>
+    </div>
+    <%=f.error_span(:surname) %>
+  </div>
+  <div class="form-group">
+    <%= f.label :mainname, :class => 'control-label col-lg-2' %>
+    <div class="col-lg-10">
+      <%= f.text_field :mainname, :class => 'form-control' %>
+    </div>
+    <%=f.error_span(:mainname) %>
+  </div>
+  <div class="form-group">
+    <%= f.label :middlename, :class => 'control-label col-lg-2' %>
+    <div class="col-lg-10">
+      <%= f.text_field :middlename, :class => 'form-control' %>
+    </div>
+    <%=f.error_span(:middlename) %>
+  </div>
+  <div class="form-group">
+    <%= f.label :email, :class => 'control-label col-lg-2' %>
+    <div class="col-lg-10">
+      <%= f.text_field :email, :class => 'form-control' %>
+    </div>
+    <%=f.error_span(:email) %>
+  </div>
+  <div class="form-group">
+    <%= f.label :moretext, :class => 'control-label col-lg-2' %>
+    <div class="col-lg-10">
+      <%= f.text_area :moretext, :class => 'form-control', :rows => "4" %>
+    </div>
+    <%=f.error_span(:moretext) %>
+  </div>
+
+  <% if params[:journal_id] != nil %>
+    <%= hidden_field_tag(:journal_id, params[:journal_id]) %>
+    <%= hidden_field_tag(:publication_id, params[:publication_id]) %>
+    <%= hidden_field_tag(:article_id, params[:article_id]) %>
+  <% end %>
+  
+  <% if params[:user_set_author] %>
+    <%= hidden_field_tag(:user_set_author, params[:user_set_author]) %>
+  <% end %>
+  
+  <div class="form-group">
+    <div class="col-lg-offset-2 col-lg-10">
+  
+    <% if @author.surname? %>
+      <%= f.submit t('authors.edit.button', :default => 'Edit author'), :class=>"btn btn-primary"  %>
+    <% else %>
+      <%= f.submit t('authors.new.button', :default => 'Add author'), :class=>"btn btn-primary" %>
+    <% end %>  
+
+    <% if params[:article_id] != nil %>
+      <% @journal = Journal.find(params[:journal_id]) %>
+      <% @publication = @journal.publications.find(params[:publication_id]) %>
+      <% @article = @publication.articles.find(params[:article_id]) %>
+      
+      <% if @author.surname? %>
+        <%= link_to t('.cancel',                       
+                      :default => t("helpers.links.cancel")), 
+                      author_path(@author, :journal_id => @journal.id, :publication_id => @publication.id, :article_id => @article.id), 
+                      :class => 'btn btn-default' %>
+      <% else %>                
+        <%= link_to t('.cancel', 
+                      :default => t("helpers.links.cancel")), 
+                      new_journal_publication_article_paternity_path(@journal, @publication, @article), 
+                      :class => 'btn btn-default' %>
+      <% end %>
+    <% else %>
+        <%= link_to t('.cancel', 
+                    :default => t("helpers.links.cancel")), 
+                    authors_path, 
+                    :class => 'btn btn-default' %>
+    <% end %>  
+
+    </div>
+  </div>
+
+<% end %>

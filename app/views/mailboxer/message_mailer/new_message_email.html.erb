@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type" />
+  </head>
+  <body>
+    <blockquote>
+      <p>
+        <%= raw @message.body %>
+      </p>
+    </blockquote>
+    <p>
+      <%= t('appname', :default => t('en.appname'))%><br/>
+      <%= link_to root_url, root_url %>
+    </p>
+  </body>
+</html>

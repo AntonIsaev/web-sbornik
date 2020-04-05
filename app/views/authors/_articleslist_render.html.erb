@@ -1,0 +1,16 @@
+<li class="list-group-item">
+  <h4>
+    <div class="text-uppercase">
+      <%= link_to @article.title, journal_publication_article_path(@article.publication.journal, @article.publication, @article) %>
+    </div>  
+  </h4>
+
+  <% @article.paternities.order('position').each do |paternity| %>
+    <%= link_to paternity.author.name_with_initial, author_path(paternity.author) %>
+  <% end %>  
+
+  <div class="small">
+    <%= link_to @article.publication.title, journal_publication_path(@article.publication.journal, @article.publication) %>, 
+    <%= link_to @article.publication.journal.title, journal_path(@article.publication.journal) %>
+  </div>
+</li>

@@ -1,0 +1,69 @@
+<%- model_class = Journal -%>
+<% provide(:title, @journal.title) %> 
+
+<div class="page-header">
+  <div class="col-lg-2">
+    <img src="<%= @journal.logo.url %>" width="150px">
+  </div>
+  <div class="col-lg-10">
+    <h1> <%= @journal.title %> </h1>
+  </div>
+</div>
+
+<dl class="dl-horizontal">
+  <dt></dt><dd></dd>
+  <dt><strong><%= model_class.human_attribute_name(:udk) %>:</strong></dt>
+  <dd><%= @journal.udk %></dd>
+
+  <dt><strong><%= model_class.human_attribute_name(:ISSN) %>:</strong></dt>
+  <dd><%= @journal.ISSN %></dd>
+
+  <dt><strong><%= model_class.human_attribute_name(:website) %>:</strong></dt>
+  <dd> 
+    <%= link_to @journal.get_website, @journal.get_website %>
+  </dd>
+  
+  
+  <dt><strong><%= model_class.human_attribute_name(:descr) %>:</strong></dt>
+  <dd><%= @journal.descr %></dd>
+
+  <dt><strong><%= model_class.human_attribute_name(:arules) %>:</strong></dt>
+  <dd>
+    <% if @journal.arules_file_name != nil %>
+      <%= link_to @journal.arules_file_name, @journal.arules.url %>
+    <% else %>
+      <% if user_signed_in? %>
+        <% if @journal.user_id = @current_user.id %>
+          <%= link_to t('journals.show.no_rules', :default => 'helpers.titles.not_set'), edit_journal_path(@journal) %>
+        <% else %>  
+          <%= t('journals.show.no_rules', :default => 'helpers.titles.not_set') %>
+        <% end %>
+      <% else %>  
+        <%= t('journals.show.no_rules', :default => 'helpers.titles.not_set') %>
+      <% end %>
+    <% end %>
+  </dd>
+  
+</dl>
+
+<h3><%= t('publications.index.title') %></h3>
+
+<div class="list-group">
+<a href="<%= new_journal_publication_path(@journal) %>" class="list-group-item list-group-item-info"><%= t('publications.new.title') %> </a>
+<% @journal.publications.each do |publication| %>
+
+	<a href="<%= journal_publication_path(@journal, publication) %>" class="list-group-item">
+		<span class="badge"><%= publication.pub_status %></span>
+		<%= publication.title %> 
+	</a>
+<% end %>
+</div>
+
+<%= link_to t('.back', :default => t("helpers.links.back")),
+              journals_path, :class => 'btn btn-default'  %>
+<% if user_signed_in? && current_user.id == @journal.user_id %>             
+  <%= link_to t('.edit', :default => t("helpers.links.edit")),
+                edit_journal_path(@journal), :class => 'btn btn-default' %>
+  <%= link_to t('publications.new.title'),
+              new_journal_publication_path(@journal), :class => 'btn btn-primary'  %>
+<% end %>                

@@ -1,0 +1,91 @@
+<tr>
+  <% if @curr_article.comments.where(:comment_type_id => 2).count > 0 %>
+  <td class="success">
+    <small><%= t('articles.index.ready_state.has_license_agreement')+t('articles.index.ready_state.result_yes') %></small>
+  <% else %>  
+  <td class="danger">
+    <%= t('articles.index.ready_state.has_license_agreement')+t('articles.index.ready_state.result_no') %>
+  <% end %>
+  </td>
+    
+  <% if @curr_article.comments.where(:comment_type_id => 3).count > 0 %>
+  <td class="success">
+    <small><%= t('articles.index.ready_state.has_expert_opinion')+t('articles.index.ready_state.result_yes') %></small>
+  <% else %>  
+  <td class="danger">
+    <%= t('articles.index.ready_state.has_expert_opinion')+t('articles.index.ready_state.result_no') %>
+  <% end %>
+  </td>
+  
+  <% if @curr_article.comments.where(:comment_type_id => 6).count > 0 %>
+  <td class="success">
+    <small><%= t('articles.index.ready_state.has_review')+t('articles.index.ready_state.result_yes') %></small>
+  <% else %>  
+  <td class="danger">
+    <%= t('articles.index.ready_state.has_review')+t('articles.index.ready_state.result_no') %>
+  <% end %>
+  </td>
+  
+  <% if !@curr_article.annotation_en.blank? && !@curr_article.keywords_en.blank? && !@curr_article.title_en.blank? %>
+  <td class="success">
+    <small><%= t('articles.index.ready_state.has_english')+t('articles.index.ready_state.result_yes') %></small>
+  <% else %>  
+  <td class="danger">
+    <%= t('articles.index.ready_state.has_english')+t('articles.index.ready_state.result_no') %>
+  <% end %>
+  </td>
+  
+  <% b = @curr_article.authors.count > 0 %>
+  <% if b %>
+    <% @curr_article.authors.each do |author| %>
+      <% b = author.degrees.count != 0 && !author.surname.blank? %>
+      <% break if !b %>
+    <% end %>
+  <% end %>  
+  <% if b %>
+  <td class="success">
+    <small><%= t('articles.index.ready_state.has_authors_info')+t('articles.index.ready_state.result_yes') %></small>
+  <% else %>  
+  <td class="danger">
+    <%= t('articles.index.ready_state.has_authors_info')+t('articles.index.ready_state.result_no') %>
+  <% end %>
+  </td>
+  
+  <% if @curr_article.materials.last.is_bibliography_ready == 1 %>
+  <td class="success">
+    <small><%= t('articles.index.ready_state.has_bibliography')+t('articles.index.ready_state.result_ready') %></small>
+  <% else %>  
+  <td class="danger">
+    <%= t('articles.index.ready_state.has_bibliography')+t('articles.index.ready_state.result_not_ready') %>
+  <% end %>
+  </td>
+  
+  <% if @curr_article.materials.last.is_images_ready == 1 %>
+  <td class="success">
+    <small><%= t('articles.index.ready_state.has_images')+t('articles.index.ready_state.result_ready') %></small>
+  <% else %>  
+  <td class="danger">
+    <%= t('articles.index.ready_state.has_images')+t('articles.index.ready_state.result_not_ready') %>
+  <% end %>
+  </td>
+
+  <% if @curr_article.materials.last.is_formulas_ready == 1 %>
+  <td class="success">
+    <small><%= t('articles.index.ready_state.has_formulas')+t('articles.index.ready_state.result_ready') %></small>
+  <% else %>  
+  <td class="danger">
+    <%= t('articles.index.ready_state.has_formulas')+t('articles.index.ready_state.result_not_ready') %>
+  <% end %>
+  </td>
+  
+  <% pages_count = get_material_pages_count(@curr_article) %>
+  <% if pages_count != 0 %>
+  <td class="success">
+    <small><%= t('articles.index.ready_state.pages_count', pages_count: pages_count.to_s) %></small>
+  <% else %>  
+  <td class="danger">
+    <%= t('articles.index.ready_state.pages_count', pages_count: pages_count.to_s) %>
+  <% end %>
+  </td>
+
+</tr>

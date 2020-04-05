@@ -1,0 +1,24 @@
+<% provide(:title, t('devise.confirmation_2.title')) %> 
+<h2><%= t('devise.confirmation_2.title') %></h2>
+
+<%= form_for(resource, as: resource_name, url: confirmation_path(resource_name), html: { method: :post, :class => "form-horizontal resend_confirm" }) do |f| %>
+  <%= devise_error_messages! %>
+
+          <div id="legend">
+            <legend class=""><%= t('devise.confirmation_2.title_h2') %></legend>
+          </div>
+  <div class="form-group">
+    <%= f.label :email, t('devise.sessions.user.reset_password_email', :default => t('en.devise.sessions.user.reset_password_email')), :class => 'control-label col-lg-2' %>
+    <div class="col-lg-8">
+      <%= f.email_field :email, autofocus: true, required: true, value: (resource.pending_reconfirmation? ? resource.unconfirmed_email : resource.email), :class => 'form-control' %> 
+    </div>  
+  </div>
+
+  <div class="form-group">
+    <div class="col-lg-offset-2 col-lg-10">
+      <%= f.submit t('devise.confirmation_2.button', :default => t('en.devise.confirmation_2.button')), :class => 'btn btn-primary' %>
+      <%= render "devise/shared/links" %>
+    </div>  
+  </div>
+<% end %>
+

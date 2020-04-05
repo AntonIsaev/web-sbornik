@@ -1,0 +1,144 @@
+<%- model_class = Portion -%>
+<% can_user_made_actions = user_signed_in? && (current_user.id == @journal.user_id || (@publication.uroles.where('user_id = '+current_user.id.to_s+' AND chief_id = '+@journal.user_id.to_s+' AND role_id = 0').count != 0) || current_user.admin?) %>
+<div>  
+
+<ul id="sortable" class="list-group col-lg-12">
+  <% $total_pages_count = 0 %>
+  
+  <%  @publication.portions.order('portions.position').each do |portion|
+        if portion.pages_count == nil
+          portion.pages_count = 0
+          portion.save
+        end
+        
+        if portion.pages_count == 0
+          if portion.ftype == 6
+            @publication.materials.each do |material|
+              if not material.file_pdf.blank? && File.extname(material.file_pdf.path).downcase == '.pdf'
+                reader = PDF::Reader.new(material.file_pdf.path)
+                portion.pages_count = portion.pages_count + reader.page_count
+              elsif not material.file.blank? && File.extname(material.file.path).downcase == '.pdf'
+                reader = PDF::Reader.new(material.file.path)
+                portion.pages_count = portion.pages_count + reader.page_count
+              end  
+            end
+          elsif (not portion.file_pdf.blank?) && (portion.file_pdf.path != nil) && (File.extname(portion.file_pdf.path).downcase == '.pdf')
+            reader = PDF::Reader.new(portion.file_pdf.path)
+            portion.pages_count = reader.page_count
+          elsif (not portion.file.blank?) && File.extname(portion.file.path).downcase == '.pdf'
+            reader = PDF::Reader.new(portion.file.path)
+            portion.pages_count = reader.page_count
+          end
+          portion.save
+        end
+        
+        if portion.is_numbering <= 1
+          $total_pages_count += portion.pages_count
+        end  
+    end 
+      
+    portion = @publication.portions.where('ftype = 10').first
+    if portion != nil
+      n = portion.pages_count
+      portion.pages_count = (($total_pages_count - portion.pages_count) % @publication.pages_multiplicity)
+      if portion.pages_count != 0
+        portion.pages_count = @publication.pages_multiplicity - portion.pages_count
+      end
+      portion.save
+      $total_pages_count = $total_pages_count - n + portion.pages_count
+    end
+      
+  %>
+  
+  <% @publication.portions.order('portions.position').each do |portion| %>
+    <li class="list-group-item" id="portion_<%= portion.position %>">
+      <% if can_user_made_actions %>
+        ||| 
+      <% end %>  
+
+    <span class="badge"><%= portion.pages_count.to_s %></span>
+    <% if portion.ftype >= 6 && portion.ftype <= 9 %>
+      <span class="badge" title="<%= t('portions.badges.auto_hint', :default => t('en.portions.badges.auto_hint')) %>"><%= t('portions.badges.auto', :default => t('en.portions.badges.auto')) %></span>
+    <% end %>
+    <% if portion.is_numbering >= 1 %>
+      <span class="badge" title="<%= t('portions.badges.not_numbered_hint', :default => t('en.portions.badges.not_numbered_hint')) %>"><%= t('portions.badges.not_numbered', :default => t('en.portions.badges.not_numbered')) %></span>
+    <% end %>
+    <% if portion.is_numbering == 2 %>
+      <span class="badge" title="<%= t('portions.badges.not_listed_hint', :default => t('en.portions.badges.not_listed_hint')) %>"><%= t('portions.badges.not_listed', :default => t('en.portions.badges.not_listed')) %></span>
+    <% end %>
+    
+    <% if portion.add_to_contents == 1 %>
+      <span class="badge" title="<%= t('portions.badges.add_to_contents_hint', :default => t('en.portions.badges.add_to_contents_hint')) %>"><%= t('portions.badges.add_to_contents', :default => t('en.portions.badges.add_to_contents')) %></span>
+    <% end %>
+      <% if portion.file_file_name != '' && portion.file_file_name != nil %>
+        <%= link_to t("portions.types.t"+portion.ftype.to_s), portion.file.url %>
+      <% else %>  
+        <%= t("portions.types.t"+portion.ftype.to_s) %>
+      <% end %>
+      <% if user_signed_in? %>
+        <% if can_user_made_actions %>
+          <% if portion.ftype < 6 || portion.ftype > 9 %>
+            <%= link_to t('helpers.links.edit', :default => "Edit"), 
+                        edit_journal_publication_portion_path(@journal, @publication, portion), 
+                        :class => "btn btn-info btn-xs" %>
+          <% elsif portion.ftype != 6 %>              
+            <%= link_to t('helpers.links.tune', :default => "Tune"), 
+                        edit_journal_publication_portion_path(@journal, @publication, portion), 
+                        :class => "btn btn-info btn-xs" %>
+          <% end %>    
+
+          <% if portion.ftype != 6 %>  
+            <%= link_to t('helpers.links.remove', :default => "Remove"),
+                          journal_publication_portion_path(@journal, @publication, portion), 
+                          method: :delete, 
+                          :data => { :confirm => t('.confirm', :default => t("helpers.links.confirm", :default => 'Are you sure?'))}, 
+                          :class => "btn btn-warning btn-xs" %>
+          <% end %>    
+
+          <% if portion.ftype >= 6 && portion.ftype <= 9 %>
+            <%= link_to 'PDF', 
+                        journal_publication_portion_pdf_path(@journal, @publication, portion), 
+                        :class => "btn btn-default btn-xs" %>
+          <% end %>  
+          
+        <% end %>                
+      <% end %>                
+    </li>  
+  <% end %>
+ 
+  <li class="list-group-item active">
+    <span class="badge"><%= $total_pages_count.to_s %></span>
+    <strong><%= t('portions.index.total_pages_count', :default => 'Total pages count: ') %></strong>
+  </li>
+ 
+</ul>
+
+</div>
+
+<% if user_signed_in? %>
+  <% if can_user_made_actions %>
+<script type="text/javascript">
+    $(document).ready(function () { 
+		$( "#sortable" ).sortable({
+			axis: 'y',
+			dropOnEmpty: false,
+			cursor: 'move',
+			items: 'li',
+			opacity: 0.7,
+			scroll: true,
+			update: function () {
+				$.ajax({
+				type: 'post',
+				url: '<%= sort_journal_publication_portions_path(@journal, @publication) %>',
+				data: $("#sortable").sortable('serialize'),
+				dataType: 'script',
+				complete: function(request){
+					$("#sortable").effect('highlight');
+					}
+				});
+			}
+		});
+	});
+</script>
+  <% end %>
+<% end %> 

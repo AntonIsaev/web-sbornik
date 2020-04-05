@@ -1,0 +1,119 @@
+<div class="list-group">
+  <a href="#", class="list-group-item">
+    <h4 class="list-group-item-heading">
+    <%= t('portions.pdf.authors.begin_forming', :default => t('en.portions.pdf.authors.begin_forming')) %>
+    </h4>
+  </a>  
+
+<% $errors = []
+  if global_param('auto_convert_to_pdf') == '0'
+    $errors << [t('global_params.pdf_disabled'), '', '']
+  else	
+  
+  require 'prawn/measurement_extensions'
+  
+  info = {
+    :Title => "List of authors with degrees for "+@journal.title+" ("+@publication.title+")",
+    :Author => t('appname'),
+    :Subject => @journal.title,
+    :Keywords => "web-sbornik journal",
+    :Creator => "http://www.web-sbornik.ru",
+    :Producer => "Prawn",
+    :CreationDate => Time.now
+  }
+  
+  portion = @publication.portions.where('ftype = 8').first
+  
+  fData = []
+  fPagesCount = 1
+  if portion.name_in_contents != ''
+    fCaption = portion.name_in_contents
+  else
+    fCaption = t("portions.types.t"+portion.ftype.to_s)
+  end  
+
+  author_ids = []
+  @publication.authors.order('surname').each do |author|
+    if not author_ids.include?(author.id)
+      sDegree = '<i>'
+      if author.degrees.count == 0
+        $errors << [t('portions.pdf.authors.end_error_no_degrees'), author.name_full, author_path(author)]
+      else  
+        author.degrees.order('position').each do |degree|
+          if degree.institution != nil 
+            if degree.institution.titleingenitive!= nil 
+              sDegree = sDegree + degree.info + ' ' + degree.institution.titleingenitive + ', '
+            else 
+              sDegree = sDegree + degree.info + ' ' + degree.institution.title + ', '
+            end
+          else 
+            sDegree = sDegree + degree.info + ', '
+          end
+        end    
+      end
+    
+      sDegree = sDegree.chomp(', ')+'</i>'
+      fData << [author.surname+'<br/>'+author.mainname+' '+author.middlename, sDegree]
+      author_ids << author.id
+    end  
+  end  
+  
+  if fData == []
+    $errors << [t('portions.pdf.authors.end_error_empty_list'), @publication.title, journal_publication_path(@journal, @publication)]
+  end
+  
+  Dir.mktmpdir() do |dir|
+  
+  pdf_filename = '/authors.pdf'
+  Prawn::Document.generate(dir + pdf_filename, :info => info, :page_size => "A4", :margin => [30.mm, 23.mm, 30.mm, 23.mm]) do
+  
+    font_families.update("Times-New-Roman" => {
+      :normal => Rails.root.join('public/fonts/TIMES.TTF').to_s,
+      :italic => Rails.root.join('public/fonts/TIMESI.TTF').to_s,
+      :bold => Rails.root.join('public/fonts/TIMESBD.TTF').to_s,
+      :bold_italic => Rails.root.join('public/fonts/TIMESBI.TTF').to_s
+    })
+  
+    font "Times-New-Roman"
+    font_size = 10
+    line_width = 1
+    horizontal_line 1.mm, 165.mm, :at => 242.mm
+    
+    pad_bottom(6) { pad(5) {text '<b>'+fCaption.mb_chars.upcase+'</b>', :size => 14, :align => :center, :inline_format => true}}
+    
+    if fData != []
+      table(fData, :column_widths => {0 => 45.mm}, :cell_style => { :inline_format => true, :padding => [2, 5, 3, 5]}) do |t|
+        t.before_rendering_page do |page|
+          page.row(0).border_top_width = 1
+          page.row(-1).border_bottom_width = 1
+          page.column(0).border_left_width = 0
+          page.column(0).border_right_width = 0
+          page.column(-1).border_left_width = 1
+          page.column(-1).border_right_width = 0
+        end
+      end
+    end  
+  end  
+  
+  File.open(dir + pdf_filename) do |f|
+    portion.file = nil
+    portion.file = f
+    portion.save
+
+    reader = PDF::Reader.new(portion.file.path)
+    portion.pages_count = reader.page_count
+    portion.save
+  end  
+  end
+  end
+%>
+
+  <% if $errors.size == 0 %>
+    <%= link_to t('portions.pdf.authors.end_success', :default => t('en.portions.pdf.authors.end_success')), '#', :class => 'list-group-item list-group-item-success' %>
+  <% else %>
+    <% $errors.each do |error| %>
+      <%= link_to error[0]+' '+error[1], error[2], :class => 'list-group-item list-group-item-danger' %>
+    <% end %>
+  <% end %>  
+
+</div>

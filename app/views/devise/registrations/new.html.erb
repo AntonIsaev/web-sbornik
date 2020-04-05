@@ -1,0 +1,62 @@
+<% provide(:title, t('devise.sessions.user.signup.title')) %> 
+<%= devise_error_messages! %>
+<h1><%= t('devise.sessions.user.signup.title') %></h1>
+
+<div class="container">
+  <div class="row">
+  	<div class="col-lg-12">
+       <%= form_for(resource, as: resource_name, url: registration_path(resource_name), :html => { :class =>"form-horizontal" } ) do |f| %>
+
+          <fieldset>
+            <div id="legend">
+              <legend class=""><%= t('devise.sessions.user.signup.title_h2', :default => "Login to system") %></legend>
+            </div>
+            
+          <div class="form-group">
+            <%= f.label :username, t('devise.sessions.user.signin.username', :default => 'Your name in system'), :class => 'control-label col-lg-3' %>
+            <div class="col-lg-6">
+              <%= f.text_field :username, :class => 'form-control', :placeholder => t('devise.sessions.user.signin.username', :default => 'Username') %>
+            </div>
+            <%=f.error_span(:username) %>
+          </div> 
+
+          <div class="form-group">
+            <%= f.label :email, t('devise.sessions.user.signin.email', :default => 'Email address'), :class => 'control-label col-lg-3' %>
+            <div class="col-lg-6">
+              <%= f.email_field :email, :class => 'form-control', :placeholder => t('devise.sessions.user.signin.email', :default => 'Email address') %>
+            </div>
+            <%=f.error_span(:email) %>
+          </div> 
+
+          <div class="form-group">
+            <%= f.label :password, t('devise.sessions.user.signin.password', :default => 'Password'), :class => 'control-label col-lg-3' %>
+            <div class="col-lg-6">
+              <%= f.password_field :password, :autocomplete => 'off', :class => 'form-control', :placeholder => t('devise.sessions.user.signin.password', :default => 'Password') %>
+            </div>
+            <%=f.error_span(:password) %>
+          </div> 
+
+          <div class="form-group">
+            <%= f.label :password_confirmation, t('devise.sessions.user.signin.password_retype', :default => 'Retype password'), :class => 'control-label col-lg-3' %>
+            <div class="col-lg-6">
+              <%= f.password_field :password_confirmation, :autocomplete => 'off', :class => 'form-control', :placeholder => t('devise.sessions.user.signin.password_retype', :default => 'Retype password') %>
+            </div>
+            <%=f.error_span(:password_confirmation) %>
+          </div> 
+
+        
+            <div class="form-group">
+              <!-- Button -->
+              <div class="col-lg-offset-3 col-lg-9">
+                <%= f.submit t('devise.sessions.user.register', :default => "Register"), :class=>"btn btn-primary" %>
+                <%= render "devise/shared/links" %>
+                <p class="help-block">&nbsp;</p>
+              </div>
+            </div>
+          </fieldset>
+      <% end %>
+    
+    </div> 
+  </div>
+</div>
+

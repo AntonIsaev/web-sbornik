@@ -1,0 +1,143 @@
+<%= form_for [@journal, @publication], :html => { :class => "form-horizontal publication" } do |f| %>
+
+  <% if @publication.errors.any? %>
+    <div id="error_expl" class="panel panel-danger">
+      <div class="panel-heading">
+        <h3 class="panel-title"><%= pluralize(@publication.errors.count, "error") %> prohibited this publication from being saved:</h3>
+      </div>
+      <div class="panel-body">
+        <ul>
+        <% @publication.errors.full_messages.each do |msg| %>
+          <li><%= msg %></li>
+        <% end %>
+        </ul>
+      </div>
+    </div>
+  <% end %>
+
+  <div class="form-group">
+    <%= f.label :pubno, :class => 'control-label col-lg-2' %>
+    <div class="col-lg-4">
+      <%= hb('publication_pubno') %>
+      <%= f.number_field :pubno, :class => 'form-control' %>
+      <%= he('publication_pubno') %>
+    </div>
+    <%=f.error_span(:pubno) %>
+  </div>
+  
+  <div class="form-group">
+    <%= f.label :pubtxt, :class => 'control-label col-lg-2' %>
+    <div class="col-lg-10">
+      <%= hb('publication_pubtxt') %>
+      <%= f.text_field :pubtxt, :class => 'form-control' %>
+      <%= he('publication_pubtxt') %>
+    </div>
+    <%=f.error_span(:pubtxt) %>
+  </div>
+  
+  <div class="form-group">
+    <%= f.label :ISBN, :class => 'control-label col-lg-2' %>
+    <div class="col-lg-4">
+      <%= hb('publication_ISBN') %>
+      <%= f.text_field :ISBN, :class => 'form-control' %>
+      <%= he('publication_ISBN') %>
+    </div>
+    <div class="col-lg-2" style="text-align:right;">
+      <%= link_to t('publications.edit.get_ISBN_text', :default => "Get ISBN"), t('publications.edit.get_ISBN_link', :default => "https://www.google.com/?q=How+to+get+ISBN"), :class => 'btn btn-default', :target => "_blank" %> 
+    </div>
+    <%=f.error_span(:ISBN) %>
+  </div>
+  
+  <div class="form-group">
+    <%= f.label :publication_status_id, :class => 'control-label col-lg-2' %>
+    <div class="col-lg-4">
+      <% arr = []
+        $i = 0
+        while $i < 3
+          arr << [t('publications.publication_statuses.id_'+$i.to_s, :default => t('en.publications.publication_statuses.id_'+$i.to_s)), $i]
+          $i += 1
+        end
+      %>
+      <%= hb('publication_status_id') %>
+      <%= f.select(:publication_status_id, options_for_select(arr, @publication.publication_status_id.to_s), {}, :class => "form-control" ) %>
+      <%= he('publication_status_id') %>
+    </div>
+    <%=f.error_span(:publication_status_id) %>
+  </div>
+
+  <div class="form-group">
+    <%= f.label :publish_plan, :class => 'control-label col-lg-2' %>
+    <div class="col-lg-4">
+      <%= hb('publication_publish_plan') %>
+      <%= f.date_field(:publish_plan, :class => 'form-control') %>
+      <%= he('publication_publish_plan') %>
+    </div>
+    <%=f.error_span(:publish_plan) %>
+  </div>
+
+  <div class="form-group">
+    <%= f.label :pages_multiplicity, :class => 'control-label col-lg-2' %>
+    <div class="col-lg-4">
+      <%= hb('publication_pages_multiplicity') %>
+      <%= f.select(:pages_multiplicity, options_for_select([['1', 1], ['2', 2], ['4', 4], ['8', 8], ['16', 16]], @publication.pages_multiplicity.to_s), {}, :class => "form-control" ) %>
+      <%= he('publication_pages_multiplicity') %>
+    </div>
+    <%=f.error_span(:pages_multiplicity) %>
+  </div>
+
+  <div class="form-group">
+    <%= f.label :introduction, :class => 'control-label col-lg-2' %>
+    <div class="col-lg-10">
+      <%= hb('publication_introduction') %>
+      <%= f.text_area :introduction, :class => 'form-control', :rows => '5' %>
+      <%= he('publication_introduction') %>
+    </div>
+    <%=f.error_span(:introduction) %>
+  </div>
+  
+  <div class="form-group">
+    <%= f.label :website_cover, :class => 'control-label col-lg-2' %>
+      <div class="col-lg-4">
+		<%= hb('publication_website_cover') %>
+        <%= f.file_field :website_cover, :class => 'form-control' %>
+		<%= he('publication_website_cover') %>
+      </div>
+    <% if @publication.website_cover? %>
+      <div class="col-lg-2">
+        <p class='form-control-static'><%= t('helpers.titles.file_downloaded_name', :default => 'Loaded file:') %></p>
+      </div>
+      <div class="col-lg-4">
+        <img src="<%= @publication.website_cover.url %>" width="200px">
+      </div>
+      <% end %>
+    <%=f.error_span(:website_cover) %>
+  </div>  
+
+  <div class="form-group">
+    <div class="col-lg-push-2 col-lg-10">
+      <% if @publication.pubno? %>
+        <%= f.submit t('publications.edit.button', :default => "Update publication"), :class => 'btn btn-primary' %>
+      <% else %>  
+        <%= f.submit t('publications.new.button', :default => "Add publication"), :class => 'btn btn-primary' %>
+      <% end %>  
+
+      <% if @publication.pubno? %>
+        <%= link_to t('.cancel', :default => t("helpers.links.cancel")),
+                  journal_publication_path(@journal, @publication), :class => 'btn btn-default' %>
+      <% else %>  
+        <%= link_to t('.cancel', :default => t("helpers.links.cancel")),
+                  journal_publications_path(@journal), :class => 'btn btn-default' %>
+      <% end %>  
+    </div>
+    <% if @publication.id? %>
+      <div class="col-lg-2 text-right">
+		<%= link_to t('helpers.links.destroy'),
+					journal_publication_path(@journal, @publication),
+					:method => 'delete', 
+					:data => { :confirm => t('helpers.links.confirm') },
+					:class => 'btn btn-danger' %>
+	  </div>
+    <% end %>
+  </div>
+
+<% end %>

@@ -1,0 +1,72 @@
+<%- model_class = Institution -%>
+<% provide(:title, t('institutions.index.title')) %> 
+
+<div class="page-header col-lg-10">
+  <h1><%=t 'institutions.index.title' %></h1>
+</div>
+
+<div class="page-header col-lg-2">
+  <% if user_signed_in? %>
+    <h1><%= link_to t('institutions.index.button', :default => t("helpers.links.new")),
+               new_institution_path,
+               :class => 'btn btn-primary' %></h1>
+  <% end %>              
+</div>
+
+<div class="table-responsive" id="fastsearch">
+<input name="fastsearch" type="search" class="search form-control col-lg-2"
+  placeholder="<%= t('helpers.links.search_placeholder', :default => "Search") %>"
+   autofocus /> 
+   
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th><%= model_class.human_attribute_name(:title) %></th>
+      <th><%= model_class.human_attribute_name(:postaddress) %></th>
+      <th><%= model_class.human_attribute_name(:webaddress) %></th>
+      <th><%= model_class.human_attribute_name(:created_at) %></th>
+      <% if user_signed_in? %>
+        <th><%=t '.actions', :default => t("helpers.actions") %></th>
+      <% end %>  
+    </tr>
+  </thead>
+  <tbody class="list">
+    <% @institutions.order('institutions.title').each do |institution| %>
+    
+      <%# coloring row if we can work with institution  %>
+      <% if user_signed_in? %>  
+        <% if institution.user_id == current_user.id %>
+          <tr class="success">
+        <% else %>
+          <tr>
+        <% end %>
+      <% else %>  
+        <tr>
+      <% end %>    
+         
+        <td class="a"><%= link_to institution.title, institution_path(institution) %></td>
+        <td class="b"><%= link_to institution.postaddress, 'http://maps.yandex.ru/?text=' + institution.postaddress, :target => '_blank' %></td>
+        <td class="c"><%= link_to institution.webaddress, institution.webaddress, :target => '_blank' %></td>
+        <td class="d"><%=l institution.created_at %></td>
+        <% if user_signed_in? %>
+          <% if institution.user_id == current_user.id %>
+          <td class="e">
+            <%= link_to t('.edit', :default => t("helpers.links.edit")),
+                        edit_institution_path(institution), :class => 'btn btn-default btn-xs' %>
+            <%= link_to t('.destroy', :default => t("helpers.links.destroy")),
+                        institution_path(institution),
+                        :method => :delete,
+                        :data => { :confirm => t('.confirm', :default => t("helpers.links.confirm", :default => 'Are you sure?')) },
+                        :class => 'btn btn-xs btn-danger' %>
+          </td>
+          <% end %>
+        <% end %>  
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+</div>
+
+<script src="/js/magiclist.js"></script>
+               

@@ -1,0 +1,18 @@
+<div class="container">
+
+      <form class="form-signin">
+        <h2 class="form-signin-heading"><%= t('devise.sessions.user.signin.title', :default => "Login to system") %></h2>
+        <label for="inputEmail" class="sr-only"><%= t('devise.sessions.user.signin.email', :default => 'Email address') %></label>
+        <input type="email" id="inputEmail" class="form-control" placeholder="<%= t('devise.sessions.user.signin.email', :default => 'Email address') %>" required="" autofocus="">
+        <label for="inputPassword" class="sr-only"><%= t('devise.sessions.user.signin.password', :default => 'Password') %></label>
+        <input type="password" id="inputPassword" class="form-control" placeholder="<%= t('devise.sessions.user.signin.password', :default => 'Password') %>" required="">
+        <div class="checkbox">
+          <label>
+            <input type="checkbox" value="remember-me"> Remember me
+          </label>
+        </div>
+        <%= link_to t('devise.sessions.user.login', :default => "Login"), new_user_session_path, :class=>"btn btn-lg btn-primary btn-block" %> 
+        <%= link_to t('devise.sessions.user.register', :default => "Register"), new_user_registration_path, :class=>"btn btn-lg btn-default btn-block" %>
+      </form>
+
+</div>

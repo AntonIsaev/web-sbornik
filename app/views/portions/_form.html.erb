@@ -1,0 +1,123 @@
+<%= form_for [@journal, @publication, @portion], :html => { :class => "form-horizontal portion" } do |f| %>
+
+  <% if @portion.errors.any? %>
+    <div id="error_expl" class="panel panel-danger">
+      <div class="panel-heading">
+        <h3 class="panel-title"><%= pluralize(@portion.errors.count, "error") %> prohibited this portion from being saved:</h3>
+      </div>
+      <div class="panel-body">
+        <ul>
+        <% @portion.errors.full_messages.each do |msg| %>
+          <li><%= msg %></li>
+        <% end %>
+        </ul>
+      </div>
+    </div>
+  <% end %>
+   
+  <script type="text/javascript">
+    function showHide() {
+      var obj1 = document.getElementById('name_in_contents_block'); 
+      var e = document.getElementById('portion_add_to_contents');
+      var aValue = e.checked;
+      if (aValue == false) {
+        obj1.style.display = "none";
+      }
+      else {
+        obj1.style.display = "block";
+      }
+    };
+  </script>
+
+  <div class="form-group">
+    <%= f.label :ftype, :class => 'control-label col-lg-2' %>
+    <div class="col-lg-10">
+      <% if @portion.ftype == 0 || @portion.ftype == nil %>
+        <% s = 'id not in ('
+        @publication.portions.each do |portion| 
+          if portion.ftype.to_s != '' && portion.ftype != 100
+            s = s + portion.ftype.to_s+','
+          end  
+        end
+        
+        s = s.chomp(',') + ')'
+        %>
+		<%= select :portion, :ftype,
+			PortionType.where(s).collect {|p| [ t("portions.types.t"+p.id.to_s), p.id ] }, 
+			{include_blank: false, selected: @portion.ftype}, 
+			:class => 'form-control  chosen-it' %>
+	  <% else %> 
+        <p class='form-control-static'><%= t("portions.types.t"+@portion.ftype.to_s) %></p>     
+      <% end %>
+    </div>
+    <%=f.error_span(:ftype) %>
+  </div> 
+  
+  <div class="form-group" id='portion_file_block'>
+    <%= f.label :file, :class => 'control-label col-lg-2', :id => 'portion_file_label'%>
+    
+    <% if not @portion.file? %>
+      <div class="col-lg-10">
+        <%= f.file_field :file, :class => 'form-control' %>
+      </div>
+    <% else %>  
+      <div class="col-lg-4">
+        <%= f.file_field :file, :class => 'form-control' %>
+      </div>
+      <div class="col-lg-2">
+        <p class='form-control-static'><%= t('helpers.titles.file_downloaded_name', :default => 'Loaded file:') %></p>
+      </div>
+      <div class="col-lg-4">
+        <p class='form-control-static'><%= @portion.file_file_name %></p>
+      </div>
+      <% end %>
+    <%=f.error_span(:file) %>
+  </div>  
+  
+  <div class="form-group" id='portion_checkbox_block' >
+    <div class="col-lg-offset-2 col-lg-4">
+      <label>
+        <%= f.check_box :add_to_contents, :OnChange => 'showHide()' %>
+        <%= f.label :add_to_contents, :style => "font-weight:normal;display:inline;" %>
+      </label>  
+    </div>
+  </div>
+  
+  <div class="form-group" id="name_in_contents_block" >
+    <%= f.label :name_in_contents, :class => 'control-label col-lg-2' %>
+    <div class="col-lg-10">
+      <%= f.text_field :name_in_contents, :class => 'form-control' %>
+    </div>
+    <%=f.error_span(:name_in_contents) %>
+  </div> 
+  
+  <div class="form-group">
+    <%= f.label :is_numbering, :class => 'control-label col-lg-2' %>
+    <div class="col-lg-10">
+      <% arr = []
+        $i = 0
+        while $i < 3
+          arr << [t('portions.is_numbering.id_'+$i.to_s, :default => t('en.portions.is_numbering.id_'+$i.to_s)), $i]
+          $i += 1
+        end
+      %>
+      <%= f.select(:is_numbering, options_for_select(arr, @portion.is_numbering.to_s), {}, :class => "form-control" ) %>
+    </div>
+    <%=f.error_span(:is_numbering) %>
+  </div> 
+
+  <script>showHide();</script>
+  
+  <div class="form-group">
+    <div class="col-lg-offset-2 col-lg-10">
+      <% if @portion.ftype == nil %>
+        <%= f.submit t('portions.new.button', :default => t("helpers.link.new")), :class => 'btn btn-primary' %>
+      <% else %>  
+        <%= f.submit t('portions.edit.button', :default => t("helpers.link.edit")), :class => 'btn btn-primary' %>
+      <% end %>
+      <%= link_to t('.cancel', :default => t("helpers.links.cancel")),
+                journal_publication_path(@journal, @publication), :class => 'btn btn-default' %>
+    </div>
+  </div>
+
+<% end %>

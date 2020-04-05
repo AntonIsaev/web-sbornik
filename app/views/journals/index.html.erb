@@ -1,0 +1,33 @@
+<%- model_class = Journal -%>
+<% provide(:title, t('journals.index.title')) %> 
+
+<div class="page-header col-lg-10">
+  <h1><%= t('journals.index.title') %> </h1>
+</div>
+
+<div class="page-header col-lg-2">
+  <h1><%= link_to t('journals.new.title'),
+          new_journal_path,
+          :class => 'btn btn-primary' %></h1>
+</div>              
+
+<p>&nbsp;</p>   
+   
+<% if @journals.count != 0 %>
+	<% @journals.each do |journal| %>
+		<a href="<%= journal_path(journal) %>">
+			<div class="col-lg-6 col-md-6 col-sm-12 journal<%= journal.publications.where('publication_status_id = 1').count != 0 %>">
+				<div class="col-lg-4 col-md-4 col-sm-4">
+					<img src="<%= journal.logo.url %>" width="150px">
+				</div>
+				<div class="col-lg-8 col-md-8 col-sm-8 a" style="padding-left:0px;">
+					<h4><%= journal.title %></h4>
+					<div><%= journal.descr %></div>
+					<div><%= journal.udk %></div>
+				</div>	
+			</div>	
+		</a>
+	<% end %>
+<% else %>
+	<p class="text-center"><%= t('journals.index.empty') %></p><p class="text-center"> <%= link_to t('journals.new.title'), new_journal_path, :class => 'btn btn-primary' %><p>
+<% end %>	

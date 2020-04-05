@@ -1,0 +1,5 @@
+<%- model_class = Article -%>
+<div class="page-header col-lg-6">
+  <h3><%= t('articles.new.title', :article => @article.title, :default => [:'helpers.titles.new', 'New %{model}'], :model => model_class.model_name.human.titleize) %></h3>
+</div>
+<%= render :partial => 'form' %> 

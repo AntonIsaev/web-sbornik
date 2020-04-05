@@ -1,0 +1,134 @@
+<h1>PDF</h1>
+
+<%= render 'portions/pdf_authors' %>
+<%= render 'portions/pdf_annotations_eng' %>
+<%= render 'portions/pdf_papers' %>
+<%= render 'portions/pdf_contents' %>
+
+<ul class="list-group">
+  <li class="list-group-item">
+    <h4 class="list-group-item-heading"><%= t('publications.pdf.total_compose.begin_forming', :default => t('en.publications.pdf.total_compose.begin_forming')) %></h4>
+    
+<% 
+  if global_param('auto_convert_to_pdf') == '1'
+
+  pdf_filename = '/publication.pdf'
+  
+  pdf = CombinePDF.new()
+  numbers_from = 1
+ 
+  @publication.portions.order('position').each do |portion|
+    $pdf2 = CombinePDF.new()
+    if portion.ftype == 6
+      # TODO: articles sorting!!! 
+      @publication.articles.each do |article|
+        @material = article.materials.first
+        if @material != nil 
+          if !@material.file_pdf.blank?
+            $pdf2 << CombinePDF.load(@material.file_pdf.path)
+          elsif !@material.file.blank? 
+            $pdf2 << CombinePDF.load(@material.file.path)
+          end
+        end
+      end  
+      
+      if portion.is_numbering == 0
+        opt = {
+          :number_format => '%s',
+          :font => :"Times-Roman",
+          :start_at => numbers_from,
+          :margin_from_side => 0,
+          :margin_from_height => 31,
+          :location => [:bottom],
+          :font_size => 12
+        }
+        $pdf2.number_pages(opt)
+      end
+
+      if portion.is_numbering <= 1  
+        numbers_from += portion.pages_count
+      end
+      
+      pdf << $pdf2
+
+    elsif portion.ftype == 10 && portion.pages_count > 0
+      if (portion.file != nil) && (portion.file.path != nil) && (portion.file.path != '')
+        if File.extname(portion.file.path).downcase == '.pdf'
+          $i = 0
+          while $i < portion.pages_count
+            
+            pdf3 = CombinePDF.new()
+            pdf3 << CombinePDF.load(portion.file.path)
+            if portion.is_numbering == 0
+              opt = {
+                :number_format => '%s',
+                :font => :"Times-Roman",
+                :start_at => numbers_from,
+                :margin_from_side => 0,
+                :margin_from_height => 31,
+                :location => [:bottom],
+                :font_size => 12
+              }
+              pdf3.number_pages(opt)
+            end  
+            
+            if portion.is_numbering <= 1  
+              numbers_from += 1
+            end
+            
+            pdf << pdf3
+
+            $i += 1
+          end  
+        end
+      end  
+    else
+      if (portion.file != nil) && (portion.file.path != nil) && (portion.file.path != '')
+        if File.extname(portion.file.path).downcase == '.pdf'
+          $pdf2 << CombinePDF.load(portion.file.path)
+            
+          if portion.is_numbering == 0
+            opt = {
+              :number_format => '%s',
+              :font => :"Times-Roman",
+              :start_at => numbers_from,
+              :margin_from_side => 0,
+              :margin_from_height => 31,
+              :location => [:bottom],
+              :font_size => 12
+            }
+            $pdf2.number_pages(opt)
+          end  
+            
+          if portion.is_numbering <= 1  
+            numbers_from += portion.pages_count
+          end
+            
+          pdf << $pdf2
+        end
+      end  
+    end
+  end
+  
+  Dir.mktmpdir() do |dir|
+  pdf.save(dir + pdf_filename)
+  File.open(dir + pdf_filename) do |f|
+    @publication.file = nil
+    @publication.file = f
+    @publication.save
+  end  
+  end
+  end
+ %>
+ 
+     <p class="list-group-item-text"></span><%= t('publications.pdf.total_compose.end_success', :default => t('en.publications.pdf.total_compose.end_success')) %></p>
+  </li>  
+  <li class="list-group-item list-group-item-warning"><%= t('publications.pdf.total_compose.end_notice', :default => t('en.publications.pdf.total_compose.end_notice')) %></li>
+</ul>
+
+ 
+<% if global_param('auto_convert_to_pdf') == '1' %>
+  <%= link_to t('helpers.links.open', :target => '_blank'), @publication.file.url, :class => 'btn btn-primary' %>
+<% else %>   
+  <%= link_to t('helpers.links.back'), journal_publication_path(@journal, @publication), :class => 'btn btn-default' %>
+<% end %>

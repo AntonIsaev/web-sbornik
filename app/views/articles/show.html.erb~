@@ -1,0 +1,54 @@
+<div align="right">
+<%= link_to 'К списку статей', articles_path %>
+</div>
+
+<h1><%= @article.title %></h1>
+<h2><%= link_to @article.text, edit_article_path(@article) %></h2>
+
+<h3>Приложения:</h3>
+<table>
+  <tr>
+    <td>Отредактированная статья для включения в сборник</td>
+    <td><%= render @article.comments.where(comment_type_id: 7) %></td>
+    <td><a href="#new_comment">Добавить</a></td>
+  </tr>
+
+  <tr>
+    <td>Статья автора</td>
+    <td><%= render @article.comments.where(comment_type_id: 1) %></td>
+  </tr>
+
+  <tr>
+    <td>Название и аннотация на английском языке</td>
+    <td><%= render @article.comments.where(comment_type_id: 2) %></td>
+  </tr>
+
+  <tr>
+    <td>Сведения об авторах</td>
+    <td><%= render @article.comments.where(comment_type_id: 8) %></td>
+  </tr>
+
+  <tr>
+    <td>Лицензионный договор</td>
+    <td><%= render @article.comments.where(comment_type_id: 4) %></td>
+  </tr>
+
+  <tr>
+    <td>Экспертное заключение</td>
+    <td><%= render @article.comments.where(comment_type_id: 3) %></td>
+  </tr>
+
+  <tr>
+    <td>Библиографический список</td>
+    <td><%= render @article.comments.where(comment_type_id: 5) %></td>
+  </tr>
+
+  <tr>
+    <td>Другие документы</td>
+    <td><%= render @article.comments.where(comment_type_id: 6) %>
+        <%= render @article.comments.where(comment_type_id: 0) %></td>
+  </tr>
+
+</table>
+
+<%= render 'comments/form' %>

@@ -1,0 +1,56 @@
+<%- model_class = Appointment -%>
+
+<% if user_signed_in? 
+    user_is_a_chief_assistant = @publication.uroles.where('user_id = '+current_user.id.to_s+' AND chief_id = '+@journal.user_id.to_s+' AND role_id = 0').count != 0
+    can_user_made_actions = current_user.id == @journal.user_id || user_is_a_chief_assistant || current_user.admin? 
+  else 
+    can_user_made_actions = false  
+    user_is_a_chief_assistant = false
+  end %>
+
+<div>
+  <ul class="list-group"> 
+    <% p = 0 %>
+    <% if @article.appointments.count == 0 %>
+      <li class="list-group-item list-group-item-warning"><%= t('appointments.list.empty')  %></li>
+    <% else %>
+      <% @article.appointments.order('created_at DESC').each do |appointment| %>
+        <% user = User.find(appointment.user_id)
+          s = user.username
+          if user.author_id != 0
+            s =  s + ' (' + Author.find(user.author_id).name_full+')'
+          end 
+
+          s3 = t('appointments.list.date_plan', :default => t('en.appointments.list.date_plan'))+' '+appointment.date_plan.strftime("%d.%m.%Y")
+          
+          user = User.find(appointment.user_id_set)
+          s2 = t('appointments.list.set_by', :default => t('en.appointments.list.set_by'))+' ' +user.username
+          if user.author_id != 0
+            s2 =  s2 + ' (' + Author.find(user.author_id).name_full+')'
+          end 
+          s2 = s2 + ', '+t('appointments.list.created_at', :default => 'en.appointments.list.created_at')+appointment.created_at.strftime("%d.%m.%Y")
+        %>  
+        <% if p == 0 %>
+          <li class="list-group-item list-group-item-info">
+          <% p = 1 %>
+        <% else %>  
+          <li class="list-group-item">
+        <% end %>
+          <strong><%= s %></strong>. <%= s3 %><br />
+          <div class="small"><%= s2 %></div>
+        </li> 
+      <% end %>
+    <% end %>
+
+  </ul>
+</div>
+ 
+<% if user_signed_in? %>
+  <% if can_user_made_actions %>
+    <% if @article.appointments.count == 0 %>
+      <%= link_to t('appointments.new.appointment', :default => t('en.appointments.new.appointment')), new_journal_publication_article_appointment_path(@journal, @publication, @article), :class => "btn btn-primary" %>
+    <% else %>  
+      <%= link_to t('appointments.new.version', :default => t('en.appointments.new.version')), new_journal_publication_article_appointment_path(@journal, @publication, @article), :class => "btn btn-primary" %>
+    <% end %>
+  <% end %>  
+<% end %>

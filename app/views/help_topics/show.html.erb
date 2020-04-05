@@ -1,0 +1,15 @@
+<%- model_class = HelpTopic -%>
+<% provide(:title, @help_topic.title + ' : ' + t('helpers.links.help')) %>
+
+<div class="col-lg-4 col-md-4" style="padding-top:50px;">
+	<%= draw_help_menu(@help_topics, @help_topic, true) %>
+</div>
+<div class="col-lg-8 col-md-8">
+  <div class="page-header">
+    <h1><%= @help_topic.title %></h1>
+  </div>
+
+  <p><%= @help_topic.long_text %></p>
+
+  <%= link_to t('helpers.links.close'), help_topics_path, :class => 'btn btn-default', :onclick => 'window.close();' %>
+</div>  

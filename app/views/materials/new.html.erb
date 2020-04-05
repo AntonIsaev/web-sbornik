@@ -1,0 +1,9 @@
+<%- model_class = Material -%>
+<div class="page-header">
+  <% if @article.materials.count == 0 %>
+    <h1><%=t 'materials.new.material', :default => [:'helpers.titles.new', 'New %{model}'], :model => model_class.model_name.human.titleize %></h1>
+  <% else %>  
+    <h1><%=t 'materials.new.version', :default => [:'helpers.titles.new', 'New %{model}'], :model => model_class.model_name.human.titleize %></h1>
+  <% end %>
+</div>
+<%= render :partial => 'form' %>

@@ -1,0 +1,67 @@
+<%= form_for [@journal, @publication, @article, @comment], :html => { :class => "form-horizontal comment" } do |f| %>
+
+  <% if @comment.errors.any? %>
+    <div id="error_expl" class="panel panel-danger">
+      <div class="panel-heading">
+        <h3 class="panel-title"><%= pluralize(@comment.errors.count, "error") %> prohibited this comment from being saved:</h3>
+      </div>
+      <div class="panel-body">
+        <ul>
+        <% @comment.errors.full_messages.each do |msg| %>
+          <li><%= msg %></li>
+        <% end %>
+        </ul>
+      </div>
+    </div>
+  <% end %>
+
+  <div class="form-group">
+    <%= f.label :commenter, :class => 'control-label col-lg-2' %>
+    <div class="col-lg-10">
+      <% 
+      arr = []
+      CommentType.all.each do |comment|
+        arr << [t('comments.types.type'+comment.id.to_s, :default => t('en.comments.types.type'+comment.id.to_s)), comment.id]
+      end  
+      %>
+    
+      <%= select :comment, :comment_type_id,
+      arr, {include_blank: false, selected: params[:comment_type_id]}, :class => 'form-control chosen-it' %>
+    </div>
+    <%=f.error_span(:commenter) %>
+  </div>
+
+    <div class="form-group">
+      <%= f.label :file, :class => 'control-label col-lg-2' %>
+      <div class="col-lg-10">
+      <% if not @comment.file? %>
+        <%= f.file_field :file, :class => 'form-control' %>
+      <% else %>  
+        <p class='form-control-static'><%= @comment.file_file_name %></p>
+      <% end %>
+      </div>
+      <%=f.error_span(:file) %>
+    </div>
+  
+  <div class="form-group">
+    <%= f.label :body, :class => 'control-label col-lg-2' %>
+    <div class="col-lg-10">
+      <%= f.text_field :body, :class => 'form-control' %>
+    </div>
+    <%=f.error_span(:body) %>
+  </div>
+
+
+  <div class="form-group">
+    <div class="col-lg-offset-2 col-lg-10">
+      <% if not @comment.file? %> 
+        <%= f.submit t('comments.new.button', :default => 'Add attachment'), :class => 'btn btn-primary' %>
+      <% else %>
+        <%= f.submit t('comments.edit.button', :default => 'Edit attachment'), :class => 'btn btn-primary' %>
+      <% end %>
+      <%= link_to t('.cancel', :default => t("helpers.links.cancel")),
+                    journal_publication_article_path(@journal, @publication, @article), :class => 'btn btn-default' %>
+    </div>
+  </div>
+
+<% end %>

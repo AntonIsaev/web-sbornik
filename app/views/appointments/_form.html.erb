@@ -1,0 +1,90 @@
+<%= form_for [@journal, @publication, @article, @appointment], :html => { :class => "form-horizontal appointment" } do |f| %>
+
+  <% if @appointment.errors.any? %>
+    <div id="error_expl" class="panel panel-danger">
+      <div class="panel-heading">
+        <h3 class="panel-title"><%= pluralize(@appointment.errors.count, "error") %> prohibited this appointment from being saved:</h3>
+      </div>
+      <div class="panel-body">
+        <ul>
+        <% @appointment.errors.full_messages.each do |msg| %>
+          <li><%= msg %></li>
+        <% end %>
+        </ul>
+      </div>
+    </div>
+  <% end %>
+
+  <div class="form-group">
+    <%= f.label :proofreader_id, :class => 'control-label col-lg-2' %>
+    <div class="col-lg-6">
+      <% arr = []
+        # proofreaders first
+        u = @publication.uroles.where('chief_id = '+@journal.user_id.to_s+' AND role_id = 1')
+        u.each do |proofreader|
+          user = User.find(proofreader.user_id)
+          s = user.username
+          if user.author_id != 0
+            s =  s + ' (' + Author.find(user.author_id).name_full+')'
+          end  
+          s = s + '. '+t('uroles.new.role1', :default => t('en.uroles.new.role1'))
+          arr << [s , proofreader.user_id]
+        end
+          
+        if current_user.id == @journal.user_id
+          # chief assistants next
+          u = @publication.uroles.where('chief_id = '+@journal.user_id.to_s+' AND role_id = 0')
+          u.each do |proofreader|
+            user = User.find(proofreader.user_id)
+            s = user.username
+            if user.author_id != 0
+              s =  s + ' (' + Author.find(user.author_id).name_full+')'
+            end  
+            s = s + '. '+t('uroles.new.role0', :default => t('en.uroles.new.role0'))
+            arr << [s , proofreader.user_id]
+          end
+        end
+
+        # user by itself is the last ("You")
+        s = t('uroles.index.role_you', :default => t('uroles.index.role_you'))
+        arr << [s , current_user.id]
+        
+        if @appointment.user_id != 0
+          s = @appointment.user_id.to_s
+        else
+          s = ''
+        end    
+      %>
+      <%= f.select(:user_id, options_for_select(arr, s), {include_blank: false}, :class => "form-control" ) %>
+    </div>
+      
+    <%=f.error_span(:proofreader_id) %> 
+  </div>  
+
+  <div class="form-group">
+    <%= f.label :date_plan, :class => 'control-label col-lg-2' %>
+    
+    <% d = DateTime.now + 3 %>
+    <div class="col-lg-4">
+      <%= f.date_field :date_plan, :class => 'form-control', :value => d.strftime("%Y-%m-%d") %>
+    </div>
+    <%=f.error_span(:date_plan) %>
+  </div>
+
+  <div class="form-group">
+    <%= f.label :comment, :class => 'control-label col-lg-2' %>
+    <div class="col-lg-10">
+      <%= f.text_area :comment, :class => 'form-control', :rows => "3" %>
+    </div>
+    <%=f.error_span(:comment) %>
+  </div>
+
+  <div class="form-group">
+    <div class="col-lg-offset-2 col-lg-10">
+      <%= f.submit t('appointments.new.button'), :class => 'btn btn-primary' %>
+      <%= link_to t('.cancel', :default => t("helpers.links.cancel")),
+                journal_publication_article_path(@journal, @publication, @article), :class => 'btn btn-default' %>
+    </div>
+  </div>
+
+<% end %>

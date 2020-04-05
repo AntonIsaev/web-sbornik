@@ -1,0 +1,90 @@
+<% provide(:title, t('devise.sessions.user.edit.title')) %> 
+<%= devise_error_messages! %>
+<h1><%= t('devise.sessions.user.edit.title') %></h1>
+
+<div class="container">
+  <div class="row">
+  	<div class="col-md-6">
+      <%= form_for(resource, as: resource_name, url: registration_path(resource_name), :html => { :class =>"form-horizontal" }, :method => :put ) do |f| %>
+        <%= devise_error_messages! %>
+
+        <fieldset>
+          <div id="legend">
+            <legend class=""><%= t('devise.sessions.user.edit.title_h2', :default => "Login to system") %></legend>
+          </div>
+ 
+          <div class="form-group">
+            <%= f.label :username, t('devise.sessions.user.signin.username', :default => 'Your name in system'), :class => 'control-label col-lg-3' %>
+            <div class="col-lg-9">
+              <%= f.text_field :username, :class => 'form-control', :placeholder => t('devise.sessions.user.signin.username', :default => 'Username') %>
+            </div>
+            <%=f.error_span(:username) %>
+          </div> 
+
+          <div class="form-group">
+            <%= f.label :email, t('devise.sessions.user.signin.email', :default => 'Email address'), :class => 'control-label col-lg-3' %>
+            <div class="col-lg-9">
+              <%= f.email_field :email, :class => 'form-control', :placeholder => t('devise.sessions.user.signin.email', :default => 'Email address') %>
+            </div>
+            <%=f.error_span(:email) %>
+          </div> 
+
+          <% if devise_mapping.confirmable? && resource.pending_reconfirmation? %>
+            <div>Currently waiting confirmation for: <%= resource.unconfirmed_email %></div>
+          <% end %>
+
+          <div class="form-group">
+            <%= f.label :current_password, t('devise.sessions.user.signin.current_password', :default => 'Current password'), :class => 'control-label col-lg-3' %>
+            <div class="col-lg-9">
+              <%= f.password_field :current_password, :autocomplete => 'off', :class => 'form-control', :placeholder => t('devise.sessions.user.signin.current_password', :default => 'Current password') %>
+            </div>
+            <%=f.error_span(:current_password) %>
+          </div> 
+
+          <div class="form-group">
+            <%= f.label :password, t('devise.sessions.user.signin.password_new', :default => 'Password'), :class => 'control-label col-lg-3' %>
+            <div class="col-lg-9">
+              <%= f.password_field :password, :autocomplete => 'off', :class => 'form-control', :placeholder => t('devise.sessions.user.signin.password_new', :default => 'Password') %>
+            </div>
+            <%=f.error_span(:password) %>
+          </div> 
+
+          <div class="form-group">
+            <%= f.label :password_confirmation, t('devise.sessions.user.signin.password_retype', :default => 'Retype password'), :class => 'control-label col-lg-3' %>
+            <div class="col-lg-9">
+              <%= f.password_field :password_confirmation, :autocomplete => 'off', :class => 'form-control', :placeholder => t('devise.sessions.user.signin.password_retype', :default => 'Retype password') %>
+            </div>
+            <%=f.error_span(:password_confirmation) %>
+          </div> 
+
+          <div class="form-group">
+            <div class="col-lg-offset-3 col-lg-9"> 
+              <%= f.submit t('devise.sessions.user.update', :default => "Update"), :class=>"btn btn-primary" %>
+              <%= link_to t('helpers.links.cancel', :default => "Cancel"), :back, :class=>"btn btn-default" %>
+              <%= render "devise/shared/links" %>
+            </div>
+          </div>
+          </fieldset>
+      <% end %>
+    
+    </div> 
+  </div>
+</div>
+
+<form class="form-horizontal">
+  <fieldset>
+    <div id="legend">
+      <legend class=""><%= t('devise.sessions.user.cancel_account_title', :default => "Cancel my account") %></legend>
+    </div>
+    
+    <p class="col-lg-12">
+      <%= t('devise.sessions.user.unhappy', :default => "Unhappy?") %> 
+    </p>
+    
+    <div class="col-lg-12">
+      <%= button_to t('devise.sessions.user.cancel_account', :default => "Cancel my account"), registration_path(resource_name), data: { confirm: "Are you sure?" }, method: :delete, :class=>"btn btn-danger" %>
+    
+      <%= link_to t('helpers.links.back', :default => "Back"), :back, :class=>"btn btn-default" %>
+    </div>
+  </fieldset>
+</form>

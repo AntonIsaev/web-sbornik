@@ -1,0 +1,9 @@
+<h1><%= t('devise.instructions.confirmation.title', :default => t('en.devise.instructions.confirmation.title')) %></h1>
+
+<h3><%= t('devise.instructions.confirmation.welcome', :username => @resource.username, :default => t('en.devise.instructions.confirmation.welcome', :username => @resource.username)) %></h3>
+
+<p><%= t('devise.instructions.confirmation.text', :default => t('en.devise.instructions.confirmation.text')) %></p>
+
+<p><strong><%= link_to t('devise.instructions.confirmation.link', :default => t('en.devise.instructions.confirmation.link')), confirmation_url(@resource, confirmation_token: @token) %></strong></p>
+
+<p><%= t('devise.instructions.footer', :default => t('en.devise.instructions.footer')) %></p>

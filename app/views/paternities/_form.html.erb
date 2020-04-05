@@ -1,0 +1,45 @@
+<%= form_for [@journal, @publication, @article, @paternity], :html => { :class => "form-horizontal paternity" } do |f| %>
+
+  <% if @paternity.errors.any? %>
+    <div id="error_expl" class="panel panel-danger">
+      <div class="panel-heading">
+        <h3 class="panel-title"><%= pluralize(@paternity.errors.count, "error") %> prohibited this paternity from being saved:</h3>
+      </div>
+      <div class="panel-body">
+        <ul>
+        <% @paternity.errors.full_messages.each do |msg| %>
+          <li><%= msg %></li>
+        <% end %>
+        </ul>
+      </div>
+    </div>
+  <% end %>
+  
+  <div class="form-group">
+    <%= f.label t('paternities.new.select_author', :default => "Select author:"), :class => 'control-label col-lg-2' %>
+    <div class="col-lg-10">
+      <%= f.select(:author_id, 
+                Author.all.order('authors.surname').collect{|i| [ i.name_full, i.id ] }, 
+                {include_blank: true, selected: params[:author_id], required: true}, :class => "form-control") %> 
+    </div>
+  </div>
+  
+  <div class="form-group">
+    <div class="col-lg-push-2 col-lg-10">
+      <%= link_to t('paternities.new.no_author_in_list', :default => "There is no such author in the list"), 
+                     new_author_path(:journal_id => @journal.id, :publication_id => @publication.id, :article_id => @article.id) %>
+    </div>
+  </div>
+  
+  
+  <div class="form-group">
+    <div class="col-lg-push-2 col-lg-10">
+      <%= f.submit t('paternities.new.button', :default => "Add author to article"), :class => 'btn btn-primary' %>
+      <%= link_to t('.cancel', 
+                    :default => t("helpers.links.cancel")),
+                    journal_publication_article_path(@journal, @publication, @article), 
+                    :class => 'btn btn-default' %>
+    </div>
+  </div>
+
+<% end %>

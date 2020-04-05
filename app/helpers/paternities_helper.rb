@@ -1,0 +1,2 @@
+module PaternitiesHelper
+end

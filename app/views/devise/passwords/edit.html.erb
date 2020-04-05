@@ -1,0 +1,33 @@
+<h2><%= t('devise.passwords.user.change_password', :default => t('en.devise.passwords.user.change_password')) %></h2>
+
+<%= form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :put, :class => "form-horizontal change_password" }) do |f| %>
+  <%= devise_error_messages! %>
+  <%= f.hidden_field :reset_password_token %>
+
+  <div class="form-group">
+    <%= f.label :password, t('devise.passwords.user.change_password_label', :default => t('en.devise.passwords.user.change_password_label')), :class => 'control-label col-lg-2' %>
+    <div class="col-lg-10">
+      <%= f.password_field :password, autofocus: true, autocomplete: "off", :class => 'form-control' %>
+      <% if @minimum_password_length %>
+        <em>(<%= t('devise.passwords.user.change_pass_min_length', :min_pass_len => @minimum_password_length, :default => t('en.devise.passwords.user.change_pass_min_length')) %>)</em>
+      <% end %>
+    </div> 
+  </div>
+
+  <div class="form-group">
+    <%= f.label :password_confirmation, t('devise.passwords.user.change_password_label_confirm', :default => t('en.devise.passwords.user.change_password_label_confirm')), :class => 'control-label col-lg-2'  %>
+    <div class="col-lg-10">
+      <%= f.password_field :password_confirmation, autocomplete: "off", :class => 'form-control' %>
+    </div> 
+  </div>
+
+  <div class="form-group">
+    <div class="col-lg-offset-2 col-lg-10">
+      <%= f.submit t('devise.passwords.user.change_password_button', :default => t('en.devise.passwords.user.change_password_button')), :class => 'btn btn-primary' %>
+      
+      <%= render "devise/shared/links" %>
+    </div>  
+  </div>
+  
+
+<% end %>

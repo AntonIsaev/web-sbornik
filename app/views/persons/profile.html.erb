@@ -1,0 +1,93 @@
+<h1><%= t('devise.sessions.user.persons_profile') %></h1>
+
+<% if user_signed_in? %>
+<% if current_user.author_id == 0 || current_user.author_id == nil  %>
+  <%= link_to t('users.articleslist.set_author', :default => "Fill your author's profile first!"), authors_path(:user_set_author => true), :class => "btn btn-primary" %>
+<% else %>
+  <% @author = Author.find(current_user.author_id) %>
+  <h3><%= @author.name_full %></h3>
+  <ul class="list-group">
+  <% @author.degrees.order('position').each do |d| %>
+    <li class="list-group-item">
+      <% if d.institution != nil %>
+        <% if d.institution.titleingenitive!= nil %>  
+          <%= d.info + ' ' + d.institution.titleingenitive %>
+        <% else %>
+          <%= d.info + ' ' + d.institution.title %>
+        <% end %>
+      <% else %>
+        <%= d.info %>
+      <% end %>
+      
+    </li>
+  <% end %>
+  </ul> 
+  
+  <%= link_to t('authors.edit.button'), author_path(@author), :class => 'btn btn-primary'   %>
+  <%= link_to t('users.articleslist.change_author', :default => "Change author"), authors_path(:user_set_author => true), :class => "btn btn-default btn-xs"   %>
+<% end %>
+<% else %>
+  <%= link_to t('devise.failure.user.unauthenticated', :default => 'Please sign in to continue operation!'), new_user_session_path %>
+<% end %>
+
+
+<%= render 'journals' %>
+<%= render 'proofreading' %>
+
+<h3><%= t('users.articleslist.title_newarticles_own', :default => "List of your articles in preparing publications:") %></h3>
+<% if user_signed_in? %>
+  <% if current_user.author_id == 0 || current_user.author_id == nil %>
+    <%= link_to t('users.articleslist.set_author', :default => "Fill your author's profile first!"), authors_path(:user_set_author => true), :class => "btn btn-primary" %>
+  <% else %>  
+    <% @show_not_published = true %>
+    <%= render 'authors/articleslistown' %>
+  <% end %>
+<% else %>  
+  <%= link_to t('devise.failure.user.unauthenticated', :default => 'Please sign in to continue operation!'), new_user_session_path %>
+<% end %>  
+
+<h3><%= t('users.articleslist.title_newarticles', :default => "List of articles with your name in preparing publications:") %></h3>
+<% if user_signed_in? %>
+  <% if current_user.author_id == 0 || current_user.author_id == nil %>
+    <%= link_to t('users.articleslist.set_author', :default => "Fill your author's profile first!"), authors_path(:user_set_author => true), :class => "btn btn-primary" %>
+  <% else %>  
+    <% @author = Author.find(current_user.author_id) %>
+    <% @show_not_published = true %>
+    <%= render 'authors/articleslist' %>
+  <% end %>
+<% else %>  
+  <%= link_to t('devise.failure.user.unauthenticated', :default => 'Please sign in to continue operation!'), new_user_session_path %>
+<% end %>  
+
+<h3><%= t('users.articleslist.titleown', :default => "List of your published articles:") %></h3>
+<% if user_signed_in? %>
+  <% if current_user.author_id == 0 || current_user.author_id == nil %>
+    <%= link_to t('users.articleslist.set_author', :default => "Fill your author's profile first!"), authors_path(:user_set_author => true), :class => "btn btn-primary" %>
+  <% else %>  
+    <% @show_not_published = false %>
+    <%= render 'authors/articleslistown' %>
+  <% end %>
+<% else %>  
+  <%= link_to t('devise.failure.user.unauthenticated', :default => 'Please sign in to continue operation!'), new_user_session_path %>
+<% end %>  
+
+<h3><%= t('users.articleslist.title', :default => "List of published articles with your name:") %></h3>
+<% if user_signed_in? %>
+  <% if current_user.author_id == 0 || current_user.author_id == nil %>
+    <%= link_to t('users.articleslist.set_author', :default => "Fill your author's profile first!"), authors_path(:user_set_author => true), :class => "btn btn-primary" %>
+  <% else %>  
+    <% @author = Author.find(current_user.author_id) %>
+    <% @show_not_published = false %>
+    <%= render 'authors/articleslist' %>
+  <% end %>
+<% else %>  
+  <%= link_to t('devise.failure.user.unauthenticated', :default => 'Please sign in to continue operation!'), new_user_session_path %>
+<% end %>  
+
+
+<h3><%= t('users.security_section', :default => "Security section") %></h3>
+<% if user_signed_in? %>
+  <%= link_to t('devise.sessions.user.edit_profile', :default => "Edit profile"), edit_user_registration_path, :class => 'btn btn-primary'  %>
+<% else %>  
+  <%= link_to t('devise.failure.user.unauthenticated', :default => 'Please sign in to continue operation!'), new_user_session_path %>
+<% end %>

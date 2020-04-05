@@ -1,0 +1,67 @@
+<% if user_signed_in? %>
+    <div align="right"><span>Здравствуйте, <%= current_user.email %></span>
+    <%= link_to 'Выйти', destroy_user_session_path, :method => :delete %></div>
+<% else %>
+    <div align="center"><%= link_to 'Войти', new_user_session_path %> или <%= link_to 'Зарегистрироваться', new_user_registration_path %></div>
+<% end %>
+
+
+<% if user_signed_in? %>
+
+  <h1>Список статей</h1>
+
+  <%= link_to 'Добавить статью', new_article_path %>
+
+  <table>
+    <tr>
+      <th>Автор</th>
+      <th>Название</th>
+      <th>Кол-во стр.</th>
+      <th>Аннотация на английском</th>
+      <th>Лицензионный договор</th>
+      <th>Экспертное заключение</th>
+      <th>Сведения об авторах</th>
+      <th>Операции</th>
+    </tr>
+ 
+    <% @articles.each do |article| %>
+      <tr>
+        <td><%= article.title %></td>
+        <td><%= article.text %></td>
+        <td></td>
+
+<!-- Колонка "Аннотация на английском" -->
+        <% if (article.comments.where(comment_type_id: 2).take != nil) %> 
+        <td class="attachmentexist"></td>
+        <% else %>
+        <td></td> 
+        <% end %>
+
+<!-- Колонка "Лицензионный договор" -->
+        <% if (article.comments.where(comment_type_id: 4).take != nil) %> 
+        <td class="attachmentexist"></td>
+        <% else %>
+        <td></td> 
+        <% end %>
+
+<!-- Колонка "Экспертное заключение" -->
+        <% if (article.comments.where(comment_type_id: 3).take != nil) %> 
+        <td class="attachmentexist"></td>
+        <% else %>
+        <td></td> 
+        <% end %>
+
+        <td><%= link_to 'Показать', article_path(article) %><br>
+            <%= link_to 'Изменить', edit_article_path(article) %><br>
+            <%= link_to 'Удалить', article_path(article),
+                method: :delete,
+                data: { confirm: 'Подтвердите удаление записи' } %></td>
+      </tr>
+    <% end %>
+    <tr>
+      <td colspan="7"><div align="center"><%= link_to 'Добавить статью', new_article_path %></div></td>
+    </tr>
+  </table>
+
+<% end %>
+

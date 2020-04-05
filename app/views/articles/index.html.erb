@@ -1,0 +1,131 @@
+<%- model_class = Article -%>
+<% @user_is_a_chief_assistant = user_signed_in? && (@journal.uroles.where('user_id = '+current_user.id.to_s+' AND chief_id = '+@journal.user_id.to_s+' AND role_id = 0').count != 0) %>
+
+<div class="page-header col-lg-10">
+  <h1><%= t('.title', :default => "Publication's articles") %></h1>
+</div>
+
+<% if @publication.publication_status_id == 1 || (user_signed_in? && current_user.admin?) %>
+  <div class="page-header col-lg-2">
+    <h1><%= link_to t('articles.new.button', :default => t("helpers.links.new")),
+                new_journal_publication_article_path,
+                :class => 'btn btn-primary' %></h1>
+  </div>              
+<% end %>  
+
+<% if @publication.publication_status_id == 0 && user_signed_in? && (current_user.id == @journal.user_id || @user_is_a_chief_assistant) %>
+  <div class="list-group col-lg-12">
+    <a href="<%= edit_journal_publication_path(@journal, @publication) %>" class="list-group-item list-group-item-info">
+      <h5 class="list-group-item-heading">
+        <%= t('articles.index.publication_state_is_0', :default => t('en.articles.index.publication_state_is_0')) %>
+      </h5>  
+    </a>
+  </div>
+<% end %>
+            
+<div class="table-responsive" id="fastsearch">
+<input name="fastsearch" type="search" class="search form-control col-lg-2"
+  placeholder="<%= t('helpers.links.search_placeholder', :default => "Search") %>"
+   autofocus /> 
+
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th colspan="5"><%= model_class.human_attribute_name(:title) %></th>
+      <th><%= t('articles.index.authors', :default => t('en.articles.index.authors')) %></th>
+      <th><%= model_class.human_attribute_name(:created_at) %></th>
+      <% if user_signed_in? %>
+        <% if current_user.id == @journal.user_id || @user_is_a_chief_assistant %>
+          <th><%= t('articles.index.proofreaders', :default => t('en.articles.index.proofreaders')) %></th>
+        <% end %>
+        <th><%=t '.actions', :default => t("helpers.actions") %></th>
+      <% end %>  
+    </tr>
+  </thead>
+  <tbody class="list">
+    <% @articles.each do |article| %>
+      
+      <% can_show_this_article = (article.materials.count != 0) && (@publication.publication_status_id == 2)
+
+      if not can_show_this_article
+        if user_signed_in?
+          can_show_this_article = current_user.admin? ||  current_user.id == @journal.user_id || @journal.uroles.where('user_id = '+current_user.id.to_s+' AND chief_id = '+@journal.user_id.to_s+' AND role_id = 0').count != 0 || (@publication.publication_status_id == 1 && (current_user.id == article.proofreader_id || current_user.id == article.user_id))
+          
+          can_edit_this_article = can_show_this_article 
+          can_delete_this_article = (current_user.id == article.user_id || @journal.uroles.where('user_id = '+current_user.id.to_s+' AND chief_id = '+@journal.user_id.to_s+' AND role_id = 0').count != 0 || current_user.id == @journal.user_id) && can_show_this_article
+          
+          can_proofread_this_article = current_user.id == article.proofreader_id
+        end
+      end %>
+      
+      <% if can_show_this_article %>
+        <tr>
+          <td colspan="5" class="a"><%= link_to article.title, journal_publication_article_path(@journal, @publication, article) %></td>
+          <td class="b">
+            <% if article.paternities.count == 0 %>
+            
+              <% if can_edit_this_article || can_proofread_this_article %>
+                <%= link_to t('articles.index.addauthors', :default => "Add authors"), journal_publication_article_path(@journal, @publication, article) %>
+              <% else %>  
+                <%= t('articles.index.addauthors', :default => "Add authors") %>
+              <% end %>
+              
+            <% else %>
+              <% article.paternities.order('position').each do |p| %>
+                <%= link_to p.author.name_with_initial, author_path(p.author) %> <br />
+              <% end %>  
+            <% end %>
+          </td>
+          <td class="c"><%=l article.created_at %></td>
+          <% if user_signed_in? %>
+            <% if current_user.id == @journal.user_id || @user_is_a_chief_assistant %>
+              <td class="d">
+                <% if article.proofreader_id != 0 %>
+                  <% u = User.find(article.proofreader_id) %>
+                  <%= u.username %>
+                <% else %>
+                  <%= t('articles.index.no_proofreader_defined', :default => t('en.articles.index.no_proofreader_defined')) %></td>
+                <% end %>
+            <% end %>
+            <td class="e">
+              <% if can_proofread_this_article %>                
+                <%= link_to t('articles.index.proofreading', :default => "Proofreading"),
+                              journal_publication_article_path(@journal, @publication, article), :class => 'btn btn-info btn-xs' %>
+              <% end %>                
+              <% if can_edit_this_article %>
+                <%= link_to t('.edit', :default => t("helpers.links.edit")),
+                              edit_journal_publication_article_path(@journal, @publication, article), :class => 'btn btn-default btn-xs' %>
+              <% end %>
+              <% if can_delete_this_article %>
+                <%= link_to t('.destroy', :default => t("helpers.links.destroy")),
+                              journal_publication_article_path(@journal, @publication, article),
+                              :method => :delete,
+                              :data => { :confirm => t('.confirm', :default => t("helpers.links.confirm", :default => 'Are you sure?')) },
+                              :class => 'btn btn-xs btn-danger' %>
+              <% end %>                
+            </td>
+          <% end %>  
+        </tr>
+        <% if user_signed_in? && (current_user.id == @journal.user_id || @user_is_a_chief_assistant) || can_proofread_this_article %>
+          <% @curr_article = article %>
+          <%= render 'ready_state_line' %>
+        <% end %>  
+      <% end %>
+    <% end %>  
+  </tbody>
+</table>
+
+</div>         
+
+<script type="text/javascript">
+(function() {
+  var options, searchable;
+
+  options = {
+    valueNames: ['a', 'b', 'c', 'd']
+  };
+
+  searchable = new List('fastsearch', options);
+
+}).call(this);
+</script>

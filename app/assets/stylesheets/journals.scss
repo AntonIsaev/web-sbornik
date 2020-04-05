@@ -1,0 +1,13 @@
+// Place all the styles related to the journals controller here.
+// They will automatically be included in application.css.
+// You can use Sass (SCSS) here: http://sass-lang.com/
+
+.journaltrue {
+	background: rgba(243, 175, 127, 0.27);
+	border-radius: 0 10px 10px 10px;
+}
+
+.journaltrue img{
+    position:relative;
+    z-index:100;
+}

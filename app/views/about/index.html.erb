@@ -1,0 +1,36 @@
+<% provide(:title, t('about.index.title')) %> 
+
+<div class="jumbotron">
+  <div class="container">
+    <h1><%= t('about.index.welcome.header') %></h1>
+    <p><%= t('about.index.welcome.msg') %></p>
+    <p><%= link_to t('about.index.welcome.btn'), journals_path, :class => "btn btn-success btn-lg", :role => "button" %> </p>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- Example row of columns -->
+  <div class="row">
+    <div class="col-md-4">
+      <h2><%= t('about.index.chief_editor.header') %></h2>
+      <p><%= t('about.index.chief_editor.msg') %></p>
+      <p><%= link_to t('about.index.chief_editor.btn'), new_journal_path, :class => "btn btn-primary", :role => "button" %></p>
+    </div>
+   
+    <div class="col-md-4">
+      <h2><%= t('about.index.author.header') %></h2>
+      <p><%= t('about.index.author.msg') %></p>
+      <p><%= link_to t('about.index.author.btn'), journals_path, :class => "btn btn-primary", :role => "button" %></p>
+    </div>
+  
+    <div class="col-md-4">
+      <h2><%= t('about.index.proofreader.header') %></h2>
+      <p><%= t('about.index.proofreader.msg') %></p>
+      <p><%= link_to t('about.index.proofreader.btn'), journals_path, :class => "btn btn-primary", :role => "button" %></p>
+    </div>
+  </div>
+
+  <hr>
+
+</div>

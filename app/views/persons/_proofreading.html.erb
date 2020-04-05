@@ -1,0 +1,25 @@
+<% if user_signed_in? %>
+  <% if Article.where('proofreader_id = '+current_user.id.to_s).count != 0 %>
+    <h3><%= t('users.proofreading.title', :default => t('en.users.proofreading.title')) %></h3>
+    <div class="list-group">
+      <% Article.where('proofreader_id = '+current_user.id.to_s).each do |article| %>
+        <% @appointment = article.appointments.order('created_at DESC').where('user_id = '+current_user.id.to_s).first %>
+        <% @publication = article.publication %>
+        <% @journal = @publication.journal %>
+        <% d = (Date.parse(@appointment.date_plan.to_s) - Date.today).to_i %>
+        <% if d <= 0 %>
+          <% s = 'list-group-item list-group-item-warning' %> 
+        <% else %>
+          <% s = 'list-group-item' %> 
+        <% end %>  
+
+        <a href="<%= journal_publication_article_path(@journal, @publication, article) %>" class="<%= s %>">
+          <span class="badge"><%= d.to_s %></span>
+          <strong><%= article.title %></strong><br />
+          <div class="small"><%= @journal.title %>, <%= @publication.title %></div>
+          <strong><%= t('users.proofreading.date_plan', :default => t('en.users.proofreading.date_plan')) %> <%= Date.parse(@appointment.date_plan.to_s).to_s %></strong>
+        </a>
+      <% end %>
+    </div>
+  <% end %>
+<% end %>  

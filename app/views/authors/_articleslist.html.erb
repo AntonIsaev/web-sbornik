@@ -1,0 +1,57 @@
+<ul class="list-group">
+ 
+  <% @paternities = Paternity.where('paternities.author_id = "'+@author.id.to_s+'"') %>
+  <% if @paternities.count == 0 %>
+    <li class="list-group-item list-group-item-warning">
+      <%= t('authors.show.articles.empty', :default => "this author isn't mentioned in any article yet") %>   
+    </li>
+  <% else %>
+    <% author_has_no_articles_flag = 0 %>
+    <% @paternities.each do |p| %>
+    
+      <%
+      # check if there is a published paper
+      if @show_not_published
+        can_show_article = true
+      else 
+        can_show_article = p.article.materials.count != 0
+      end  
+      
+      # if not then check if logged in. If yes then check if this user is owner of article
+      if not can_show_article
+        if user_signed_in?
+          can_show_article = p.article.user_id == current_user.id
+        end
+      end
+      
+      # if yes then filter by published / preparing
+      if can_show_article
+        if @show_not_published
+          can_show_article = p.article.publication.publication_status_id == 1
+        else
+          can_show_article = p.article.publication.publication_status_id == 2
+        end  
+      end  
+      %>
+
+      <% if can_show_article %> 
+        <% author_has_no_articles_flag = 1 %>
+        <% @article = p.article %>
+        <%= render 'authors/articleslist_render' %>
+      <% end %>
+    <% end %>
+    
+ 
+    <% if author_has_no_articles_flag == 0 %>
+      <li class="list-group-item list-group-item-warning">
+        <% if @show_not_published %>
+          <%= t('authors.show.articles.unpublished_empty', :default => "this author isn't mentioned in any preparing article yet") %>   
+        <% else %>  
+          <%= t('authors.show.articles.published_empty', :default => "this author isn't mentioned in any published article yet") %>   
+        <% end %>
+      </li>
+    <% end %>
+    
+  <% end %>  
+
+</ul>

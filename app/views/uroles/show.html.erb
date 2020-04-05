@@ -1,0 +1,46 @@
+<%- model_class = Urole -%>
+<div class="page-header">
+  <h1><%=t 'uroles.show.title', :default => t('en.uroles.show.title') %></h1>
+</div>
+
+<dl class="dl-horizontal">
+  <dt><strong><%= model_class.human_attribute_name(:email) %>:</strong></dt>
+  <dd><%= @urole.email %></dd>
+
+  <dt><strong><%= model_class.human_attribute_name(:user_id) %>:</strong></dt>
+  <dd>
+  <% if @urole.user_id == 0 %>
+    <div class="text-danger"><%= t('uroles.show.user_not_signed_up', :default => 'en.uroles.show.user_not_signed_up') %></div>
+  <% else %>  
+    <% u = User.find(@urole.user_id) %>
+    <% if u != nil %>
+      <%= u.username %>
+      <% if u.author_id != 0 %>
+        <% a = Author.find(u.author) %>
+        <% if a != nil %>
+          . <%= link_to t('uroles.show.assigned_author', author_name: a.name_full, :default => t('en.uroles.show.assigned_author', author_name: a.name_full)), author_path(a) %> 
+        <% end %>  
+      <% end %>
+    <% else %>  
+      <% urole.user_id = 0 %>
+      <% urole.save %>
+      <p class="text-danger"><%= t('uroles.show.user_not_signed_up', :default => t('en.uroles.show.user_not_signed_up')) %></p>
+    <% end %>  
+  <% end %>
+  </dd>
+
+  <dt><strong><%= model_class.human_attribute_name(:role_id) %>:</strong></dt>
+  <dd><%= t('uroles.new.role'+@urole.role_id.to_s, :default => 'en.uroles.new.role'+@urole.role_id.to_s) %></dd>
+</dl>
+
+<%= link_to t('helpers.links.back', :default => t("en.helpers.links.back")),
+              journal_publication_path(@journal, @publication), :class => 'btn btn-default'  %>
+<%= link_to t('helpers.links.edit', :default => t("en.helpers.links.edit")),
+              edit_journal_publication_urole_path(@journal, @publication, @urole), :class => 'btn btn-default' %>
+<%= link_to t('helpers.links.destroy', :default => t("en.helpers.links.destroy")),
+              journal_publication_urole_path(@journal, @publication, @urole),
+              :method => 'delete',
+              :data => { :confirm => t('.confirm', :default => t("helpers.links.confirm", :default => 'Are you sure?')) },
+              :class => 'btn btn-danger' %>
+<%= link_to t('helpers.links.message', :default => t("en.helpers.links.message")),
+              '#', :class => 'btn btn-success' %>

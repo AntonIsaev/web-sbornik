@@ -1,0 +1,36 @@
+<%- model_class = Portion -%>
+
+<% p = 0 %>
+
+<% while p < 2 do %>
+<div class="col-lg-6">
+<div class="list-group col-lg-12">
+  <div class="list-group-item list-group-item-info">
+    <%= t('uroles.index.role'+p.to_s+'_plural', :default => 'en.uroles.new.role'+p.to_s+'_plural') %>
+  </div>
+  <% if @publication.uroles.where('role_id = '+p.to_s).count == 0 %>
+    <div class="list-group-item list-group-item-warning">
+      <%= t('uroles.index.role'+p.to_s+'_zero', :default => 'en.uroles.new.role'+p.to_s+'_zero') %>
+    </div>
+  <% end %>
+  
+  <% @publication.uroles.where('role_id = '+p.to_s).each do |urole| %>
+    <div class="list-group-item">
+
+    <%= link_to urole.email, journal_publication_urole_path(@journal, @publication, urole) %>
+    <%= link_to t('helpers.links.edit', :default => "Edit"), 
+                  edit_journal_publication_urole_path(@journal, @publication, urole), 
+                  :class => "btn btn-info btn-xs" %>
+    <%= link_to t('helpers.links.remove', :default => "Remove"),
+                  journal_publication_urole_path(@journal, @publication, urole), 
+                  method: :delete, 
+                  :data => { :confirm => t('.confirm', :default => t("helpers.links.confirm", :default => 'Are you sure?'))}, 
+                  :class => "btn btn-warning btn-xs" %>
+    <%= link_to t('helpers.links.message', :default => t("en.helpers.links.message")),
+                  '#', :class => 'btn btn-success btn-xs' %>
+    </div>  
+  <% end %>
+ </div>
+ </div>
+ <% p += 1 %>
+<% end %> 

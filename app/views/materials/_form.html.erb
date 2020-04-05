@@ -1,0 +1,164 @@
+<%= form_for [@journal, @publication, @article, @material], :html => { :class => "form-horizontal material" } do |f| %>
+
+  <% if @material.errors.any? %>
+    <div id="error_expl" class="panel panel-danger">
+      <div class="panel-heading">
+        <h3 class="panel-title"><%= pluralize(@material.errors.count, "error") %> prohibited this material from being saved:</h3>
+      </div>
+      <div class="panel-body">
+        <ul>
+        <% @material.errors.full_messages.each do |msg| %>
+          <li><%= msg %></li>
+        <% end %>
+        </ul>
+      </div>
+    </div>
+  <% end %>
+
+  <% if @material.file.blank? %>
+    <div class="form-group">
+      <%= f.label :file, :class => 'control-label col-lg-2' %>
+      <div class="col-lg-10">
+        <%= f.file_field :file, :class => 'form-control' %>
+      </div>
+      <%=f.error_span(:file) %>
+    </div>
+    <div class="form-group">
+      <%= f.label :comment, :class => 'control-label col-lg-2' %>
+      <div class="col-lg-10">
+        <%= f.text_field :comment, :class => 'form-control' %>
+      </div>
+      <%=f.error_span(:comment) %>
+    </div>
+    
+  <% else %>
+    <div class="form-group">
+      <%= f.label :file, :class => 'control-label col-lg-2' %>
+      <div class="col-lg-10">
+        <%= link_to @material.file_file_name, @material.file.url, :class => 'form-control' %>
+      </div>
+      <%=f.error_span(:file) %>
+    </div>
+    
+    <div class="form-group">
+      <%= f.label :file_pdf, :class => 'control-label col-lg-2' %>
+      <% if @material.file_pdf.blank? %>
+        <div class="col-lg-3">
+          <p class='form-control'><%= t('materials.edit.pdf_not_generated', :default => t('en.materials.edit.pdf_not_generated')) %></p>
+        </div>  
+        <div class="col-lg-3">
+          <%= link_to t('materials.edit.pdf_create', :default => t('en.materials.edit.pdf_create')), journal_publication_article_material_pdf_path(@journal, @publication, @article, @material), :class => 'btn btn-default' %> <%= t('materials.edit.pdf_create_manually', :default => t('en.materials.edit.pdf_create_manually')) %>
+        </div>  
+        <div class="col-lg-4">
+          <%= f.file_field :file_pdf, :class => 'form-control' %>
+        </div>  
+      <% else %>
+        <div class="col-lg-10">
+          <div><%= link_to @material.file_pdf_file_name, @material.file_pdf.url, :class => 'form-control' %></div>
+          <div class="list-group-item list-group-item-warning"><%= t('publications.pdf.total_compose.end_notice', :default => t('en.publications.pdf.total_compose.end_notice')) %></div>
+        </div>
+      <% end %>
+      <%=f.error_span(:file) %>
+    </div>
+
+    <div class="form-group">
+      <%= f.label :comment, :class => 'control-label col-lg-2' %>
+      <div class="col-lg-10">
+        <%= f.text_field :comment, :class => 'form-control' %>
+      </div>
+      <%=f.error_span(:comment) %>
+    </div>
+
+    <% if user_signed_in? %>
+      <%# author %>
+        <div class="form-group">
+          <div class="col-lg-offset-2 col-lg-10">
+            <label>
+              <%= f.check_box :checked_by_author_id, { :checked => @material.checked_by_author_id > 0, :disabled => current_user.id != @article.user_id } %>
+              <%= f.label :checked_by_author_id, :style => "font-weight:normal;display:inline;" %>
+            </label>  
+          </div>
+          <%=f.error_span(:checked_by_author_id) %>
+        </div> 
+      
+      <%# proofreader %>
+      <% if @article.proofreader_id != nil && @article.proofreader_id != 0 %>
+        <div class="form-group">
+          <div class="col-lg-offset-2 col-lg-10">
+            <label>
+              <%= f.check_box :checked_by_proofreader_id, {:checked => @material.checked_by_proofreader_id > 0,  :disabled => current_user.id != @article.proofreader_id } %>
+              <%= f.label :checked_by_proofreader_id, :style => "font-weight:normal;display:inline;" %>
+            </label>  
+          </div>
+          <%=f.error_span(:checked_by_proofreader_id) %>
+        </div> 
+      <% end %>  
+      
+      <%# chief assistant %>
+        <div class="form-group">
+          <div class="col-lg-offset-2 col-lg-10">
+            <label>
+              <%= f.check_box :checked_by_chief_assistant_id, {:checked => @material.checked_by_chief_assistant_id > 0, :disabled => (@publication.uroles.where('user_id = '+current_user.id.to_s+' AND chief_id = '+@journal.user_id.to_s+' AND role_id = 0').count == 0)} %>
+              <%= f.label :checked_by_chief_assistant_id, :style => "font-weight:normal;display:inline;" %>
+            </label>  
+          </div>
+          <%=f.error_span(:checked_by_chief_assistant_id) %>
+        </div> 
+      
+      <%# chief %>
+        <div class="form-group">
+          <div class="col-lg-offset-2 col-lg-10">
+            <label>
+              <%= f.check_box :checked_by_chief_id, {:checked => @material.checked_by_chief_id > 0, :disabled => current_user.id != @journal.user_id } %>
+              <%= f.label :checked_by_chief_id, :style => "font-weight:normal;display:inline;" %>
+            </label>  
+          </div>
+          <%=f.error_span(:checked_by_chief_id) %>
+        </div> 
+      
+    <% end %>
+  <% end %>
+
+    <div class="form-group">
+      <div class="col-lg-offset-2 col-lg-10">
+        <label>
+          <%= f.check_box :is_bibliography_ready, { :checked => @material.is_bibliography_ready == 1 } %>
+          <%= f.label :is_bibliography_ready, :style => "font-weight:normal;display:inline;" %>
+        </label>  
+      </div>
+      <%=f.error_span(:is_bibliography_ready) %>
+    </div> 
+
+    <div class="form-group">
+      <div class="col-lg-offset-2 col-lg-10">
+        <label>
+          <%= f.check_box :is_images_ready, { :checked => @material.is_images_ready == 1 } %>
+          <%= f.label :is_images_ready, :style => "font-weight:normal;display:inline;" %>
+        </label>  
+      </div>
+      <%=f.error_span(:is_images_ready) %>
+    </div> 
+
+    <div class="form-group">
+      <div class="col-lg-offset-2 col-lg-10">
+        <label>
+          <%= f.check_box :is_formulas_ready, { :checked => @material.is_formulas_ready == 1 } %>
+          <%= f.label :is_formulas_ready, :style => "font-weight:normal;display:inline;" %>
+        </label>  
+      </div>
+      <%=f.error_span(:is_formulas_ready) %>
+    </div> 
+  
+  <div class="form-group">
+    <div class="col-lg-offset-2 col-lg-10">
+      <% if @material.file.blank? %>
+        <%= f.submit t('materials.new.button', :default => t('en.materials.new.button')), :class => 'btn btn-primary' %>
+      <% else %>
+        <%= f.submit t('materials.edit.button', :default => t('en.materials.edit.button')), :class => 'btn btn-primary' %>
+      <% end %>  
+      <%= link_to t('.cancel', :default => t("helpers.links.cancel")),
+                journal_publication_article_path(@journal, @publication, @article), :class => 'btn btn-default' %>
+    </div>
+  </div>
+
+<% end %>

@@ -1,0 +1,76 @@
+<%- model_class = Article -%>
+<div class="page-header">
+  <h1><%= @article.title %></h1>
+</div>
+
+<dl class="dl-horizontal">
+  <dt><strong><%= model_class.human_attribute_name(:title) %>:</strong></dt>
+  <dd><%= @article.title %></dd>
+  <dt><strong><span title="<%= model_class.human_attribute_name(:title_en) %>"><%= model_class.human_attribute_name(:title_en) %></span>:</strong></dt>
+  <dd><%= @article.title_en %></dd>
+  <dt><strong><%= model_class.human_attribute_name(:udk) %>:</strong></dt>
+  <dd><%= @article.udk %></dd>
+  <dt><strong><%= model_class.human_attribute_name(:annotation) %>:</strong></dt>
+  <dd><%= @article.annotation %></dd>
+  <dt><strong><%= model_class.human_attribute_name(:keywords) %>:</strong></dt>
+  <dd><%= @article.keywords %></dd>
+  <dt><strong><span title="<%= model_class.human_attribute_name(:annotation_en) %>"><%= model_class.human_attribute_name(:annotation_en) %></span>:</strong></dt>
+  <dd><%= @article.annotation_en %></dd>
+  <dt><strong><span title="<%= model_class.human_attribute_name(:keywords_en) %>"><%= model_class.human_attribute_name(:keywords_en) %></span>:</strong></dt>
+  <dd><%= @article.keywords_en %></dd>
+</dl>
+
+<%= link_to t('helpers.links.back'),
+              journal_publication_articles_path(@journal, @publication), :class => 'btn btn-default'  %>
+              
+<% if user_signed_in? %>  
+
+  <% can_user_made_actions = current_user.id == @article.user_id || current_user.id == @article.proofreader_id || current_user.id == @journal.user_id || @journal.uroles.where('user_id = '+current_user.id.to_s+' AND chief_id = '+@journal.user_id.to_s+' AND role_id = 0').count != 0 || current_user.admin? %>
+  
+  <% if can_user_made_actions %>            
+    <%= link_to t('helpers.links.edit'),
+                  edit_journal_publication_article_path(@journal, @publication, @article), :class => 'btn btn-default' %>
+  <% end %>  
+  
+  <% if can_user_made_actions && current_user.id != @article.proofreader_id %>
+    <%= link_to t('helpers.links.destroy'),
+                  journal_publication_article_path(@journal, @publication, @article),
+                  :method => 'delete',
+                  :data => { :confirm => t('helpers.links.confirm') },
+                  :class => 'btn btn-danger' %>
+  <% end %>                
+  
+<% end %>                
+
+<h2><%= t("articles.authors.title") %></h2>
+<%= render :partial => 'paternities/paternity' %>
+
+<h2><%= t('materials.list.title') %></h2>
+<%= render :partial => 'materials/materials' %>
+
+<h2><%= t('appointments.list.title') %></h2>
+<%= render :partial => 'appointments/appointments' %>
+
+<h2><%= t('articles.attachments.title') %></h2>
+
+<table class="table table-striped">
+
+  <% if user_signed_in? %>
+    <% comment_types = CommentType.all %>
+    
+    <% comment_types.each do |c| %>
+      <tr>
+        <td><strong><%= t('comments.types.type'+c.id.to_s) %></strong></td>
+        <td><%= render @article.comments.where(comment_type_id: c.id).reverse %></td>
+        <% if can_user_made_actions %>
+          <td>
+            <%= link_to t('helpers.links.new'), 
+                    new_journal_publication_article_comment_path(@journal, @publication, @article, :comment_type_id => c.id), 
+                    :class => "btn btn-default btn-xs" %>
+          </td>
+        <% end %>  
+      </tr>
+    <% end %>  
+  <% end %>
+
+</table>

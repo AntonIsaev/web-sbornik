@@ -1,0 +1,89 @@
+<%= form_for [@author, @degree], :html => { :class => "form-horizontal degree" } do |f| %>
+
+  <% if @degree.errors.any? %>
+    <div id="error_expl" class="panel panel-danger">
+      <div class="panel-heading">
+        <h3 class="panel-title"><%= pluralize(@degree.errors.count, "error") %> prohibited this degree from being saved:</h3>
+      </div>
+      <div class="panel-body">
+        <ul>
+        <% @degree.errors.full_messages.each do |msg| %>
+          <li><%= msg %></li>
+        <% end %>
+        </ul>
+      </div>
+    </div>
+  <% end %>
+
+  <div class="form-group">
+    <%= f.label :institution_id, :class => 'control-label col-lg-2' %>
+    <div class="col-lg-10">
+      <% if params[:institution_id] != nil %>
+        <% @institution_id = params[:institution_id] %>
+      <% else %>  
+        <% @institution_id = @degree.institution_id %>
+      <% end %>  
+      <%= f.select(:institution_id, Institution.all.order('institutions.title').collect{|i| [ i.title, i.id ] }, {include_blank: true, selected: @institution_id}, :class => 'form-control') %>
+    </div>
+    <%=f.error_span(:institution_id) %>
+  </div>
+ <div class="form-group">
+    <div class="col-lg-push-2 col-lg-10">
+      <% if params[:journal_id] != nil %>
+        <% @journal = Journal.find(params[:journal_id]) %>
+        <% @publication = @journal.publications.find(params[:publication_id]) %>
+        <% @article = @publication.articles.find(params[:article_id]) %> 
+      <% end %>
+
+      <% if @degree.id != nil %>   
+        <% if params[:journal_id] != nil %>
+          <%= link_to t('degrees.new.no_institution_in_list', :default => "There is no such institution in the list"), 
+                        new_institution_path(:author_id => @author.id, :degree_id => @degree.id, :journal_id => @journal.id, :publication_id => @publication.id, :article_id => @article.id) %>
+        <% else %>
+          <%= link_to t('degrees.new.no_institution_in_list', :default => "There is no such institution in the list"), 
+                        new_institution_path(:author_id => @author.id, :degree_id => @degree.id) %>
+        <% end %>  
+      <% else %>
+        <% if params[:journal_id] != nil %>
+          <%= link_to t('degrees.new.no_institution_in_list', :default => "There is no such institution in the list"), 
+                        new_institution_path(:author_id => @author.id, :journal_id => @journal.id, :publication_id => @publication.id, :article_id => @article.id) %>
+        <% else %>
+          <%= link_to t('degrees.new.no_institution_in_list', :default => "There is no such institution in the list"), 
+                        new_institution_path(:author_id => @author.id) %>
+        <% end %>  
+      <% end %>  
+    </div>
+  </div> 
+  <div class="form-group">
+    <%= f.label :info, :class => 'control-label col-lg-2' %>
+    <div class="col-lg-10">
+      <%= f.text_field :info, :class => 'form-control' %>
+    </div>
+    <%=f.error_span(:info) %>
+  </div>
+  
+  <% if params[:journal_id] != nil %>
+    <%= hidden_field_tag(:journal_id, params[:journal_id]) %>
+    <%= hidden_field_tag(:publication_id, params[:publication_id]) %>
+    <%= hidden_field_tag(:article_id, params[:article_id]) %>
+  <% end %> 
+  
+  <div class="form-group">
+    <div class="col-lg-offset-2 col-lg-10">
+      <% if @degree.info? %>
+        <%= f.submit t('degrees.edit.button', :default => "Edit degree"), :class => 'btn btn-primary' %>
+      <% else %>
+        <%= f.submit t('degrees.new.button', :default => "Add degree"), :class => 'btn btn-primary' %>
+      <% end %>
+
+      <% if params[:journal_id] != nil %>
+        <%= link_to t('.cancel', :default => t("helpers.links.cancel")),
+                      author_path(@author, :journal_id => @journal.id, :publication_id => @publication.id, :article_id => @article.id), :class => 'btn btn-default' %>
+      <% else %>
+        <%= link_to t('.cancel', :default => t("helpers.links.cancel")),
+                      author_path(@author), :class => 'btn btn-default' %>
+      <% end %>  
+    </div>
+  </div>
+
+<% end %>

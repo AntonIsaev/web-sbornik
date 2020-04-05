@@ -1,0 +1,5 @@
+<%= @message.body.html_safe? ? @message.body : strip_tags(@message.body) %>
+
+--
+<%= t('appname', :default => t('en.appname'))%><br/>
+<%= link_to root_url, root_url %>

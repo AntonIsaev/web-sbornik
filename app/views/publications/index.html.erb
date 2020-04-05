@@ -1,0 +1,70 @@
+<%- model_class = Publication -%>
+<div class="page-header col-lg-10">
+  <h1><%= t('.title', :default => "Journal's publications") %></h1>
+</div>
+
+<div class="page-header col-lg-2">
+  <% if user_signed_in? %>
+    <% if current_user.id == @journal.user_id %>
+      <h1>  <%= link_to t('publications.new.title', :default => t("helpers.links.new")),
+                new_journal_publication_path(@journal),
+                :class => 'btn btn-primary' %></h1>
+    <% end %>            
+  <% end %>              
+</div>
+
+<% if @publications.count == 0 %>
+<div class="list-group col-lg-12">
+  <a href="<% if current_user.id == @journal.user_id %><%= new_journal_publication_path(@journal) %><% else %>#<% end %>" class="list-group-item list-group-item-info">
+    <%= t('publications.index.zero_publications_count', :default => 'en.publications.index.zero_publications_count') %>
+  </a>
+</div>  
+<% else %>
+<div class="form-group">
+  <% @publications.each do |publication| %>
+    <div class="col-lg-4 col-xs-8 col-md-4 col-sm-4">
+      <p>
+      <a href="<%= journal_publication_path(@journal, publication) %>">
+      <img src="<%= publication.website_cover.url %>" width="200" height="282" class="img-responsive center-block img-thumbnail">
+      <div class="text-center"><h4><%= publication.title %></h4></div>
+      <div class="text-center"><h6><%= PublicationStatus.find(publication.publication_status_id).title %></h6></div>
+      </a>
+      
+      <div class="text-center">
+      <% if user_signed_in? && current_user.id = @journal.user_id %>
+        <%= link_to t('.edit', :default => t("helpers.links.edit")),
+                      edit_journal_publication_path(@journal, publication), :class => 'btn btn-default btn-xs' %>
+        <%= link_to t('.destroy', :default => t("helpers.links.destroy")),
+                      journal_publication_path(@journal, publication),
+                      :method => :delete,
+                      :data => { :confirm => t('.confirm', :default => t("helpers.links.confirm", :default => 'Are you sure?')) },
+                      :class => 'btn btn-xs btn-danger' %>
+      <% end %>  
+   
+      <% can_view_articles_list = publication.publication_status_id == 2 %>
+          
+      <% if user_signed_in? %>
+        <% can_view_articles_list = can_view_articles_list || current_user.admin? || current_user.id == @journal.user_id || (publication.uroles.where('user_id = '+current_user.id.to_s+' AND chief_id = '+@journal.user_id.to_s+' AND role_id = 0').count != 0 && publication.publication_status_id != 0) || publication.articles.where('articles.proofreader_id = '+current_user.id.to_s) %>
+        <% already_have_my_articles = publication.publication_status_id == 1 && (publication.articles.where('articles.user_id = '+current_user.id.to_s).count != 0) && current_user.author_id != nil %>
+      <% end %>
+        
+      <p>        
+      <% if already_have_my_articles %>  
+        <%= link_to t('publications.articleslist_my', :default => "My articles"),
+                      journal_publication_articles_path(@journal, publication), :class => 'btn btn-default btn-info' %>
+      <% elsif can_view_articles_list %>
+        <%= link_to t('publications.articleslist', :default => "Articles list"),
+                      journal_publication_articles_path(@journal, publication), :class => 'btn btn-default' %>
+      <% end %>
+
+      <% if publication.publication_status_id == 1 %>
+        <%= link_to t('publications.index.send_article', :default => "Send article"),
+                      new_journal_publication_article_path(@journal, publication), :class => 'btn btn-success' %>
+      <% end %>  
+      </p>
+      </div>
+      </p>
+    </div>
+  <% end %>
+</div> 
+<% end %>

@@ -1,0 +1,628 @@
+# Files in the config/locales directory are used for internationalization
+# and are automatically loaded by Rails. If you want to use locales other
+# than English, add the necessary files in this directory.
+#
+# To use the locales, use `I18n.t`:
+#
+#     I18n.t 'hello'
+#
+# In views, this is aliased to just `t`:
+#
+#     <%= t('hello') %>
+#
+# To use a different locale, set it with `I18n.locale`:
+#
+#     I18n.locale = :es
+#
+# This would use the information in config/locales/es.yml.
+#
+# To learn more, please read the Rails Internationalization guide
+# available at http://guides.rubyonrails.org/i18n.html.
+
+en:
+  breadcrumbs:
+    root: "Index"
+  
+  appname: "WEB-Journal"
+  
+  menu: 
+    users: "Users"
+    authors: "Authors"
+    institutions: "Institutions"
+    usefullinks: "Useful links"
+    management_panel: "Management panel"
+    journals: "Journals"
+    about: "About service"
+    pricelist: "Pricelist"
+
+  helpers:
+    actions: "Actions"
+    links:
+      back: "Back"
+      cancel: "Cancel"
+      confirm: "Are you sure?"
+      destroy: "Delete"
+      new: "New"
+      edit: "Edit"
+      open: "Open"
+      search: "Search"
+      search_placeholder: "Fast search"
+      select: "Select"
+      tune: "Tune"
+      message: "Write a message"
+    titles:
+      edit: "Edit %{model}"
+      save: "Save %{model}"
+      new: "New %{model}"
+      delete: "Delete %{model}"
+      absent: "Absent"
+      not_set: "Not set"
+    flashes:
+      no_create: "You have no permissions to create such object."
+      no_edit: "You have no permissions to edit such object."
+      no_index: "You have no permissions to view a list of such objects."
+      no_show: "You have no permissions to view such object."
+      no_delete: "You have no permissions to delete such object."
+      no_exist: "This object doesn't exist."
+
+  date:
+    formats:
+      default: "%d.%m.%Y"
+  time:
+    formats:
+      default: "%d.%m.%Y %H:%M"
+
+  journals:
+    title: "Journal"
+    index:
+      title: "Journals list"
+      publications: "Publications list"
+      no_udk: "UDC isn't set"
+      no_website: "Website isn't set"
+    edit:
+      title: "Edit journal"    
+      button: "Edit journal"       
+      author_rules_downloaded_name: "Loaded file: "
+      get_ISSN_text: "Get ISSN"
+      get_ISSN_link: "http://www.issn.org/understanding-the-issn/assignment-rules/issn-the-major-principles/"
+    new:
+      title: "Add journal" 
+      button: "Add journa;"
+    show:
+      publicationsbutton: "Journal's list of publications"
+      no_rules: "Author's rules are not set"
+      no_website: "Website is'nt set"
+      no_udk: "UDC code isn't set"
+  
+  publications:
+    articleslist: "Articles list"
+    articleslist_my: "My articles"
+    index:
+      title: "Publications list"
+      send_article: "Send article"
+      zero_publications_count: "There is no publications of journal, or you have no permissions to see publications of this journal"
+    new:
+      title: "Add publication"
+      button: "Add publication"
+    edit:
+      title: "Edit publication"
+      button: "Edit publication"
+      get_ISBN_text: "Get ISBN"
+      get_ISBN_link: "https://www.myidentifiers.com/Get-your-isbn-now"
+    show:
+      title: "Publication No. %{pubno} (%{pubtxt})"
+      articlesbutton: "Publication's list of articles"
+      no_introduction: "An introduction text must be there"
+      parts: "Components of publication"
+      uroles: "Publication co-authors"
+    publication_statuses:
+      caption: "Publication status:"
+      id_0: "Created, not visible for authors"
+      id_1: "Opened to accept articles from authors"
+      id_2: "Published"
+    pdf:
+      total_compose:
+        begin_forming: "Forming the whole publication file..."
+        end_success: "The whole publication file is formed. Errors and warning are given above."
+        end_notice: "Attention! If you open gile directly via browser, you possibly will have strange artifacts in document, or some elements of PDF documents will be absent. This error occured due to Adobe browser's plugin to view PDF files. To view file correctly, please save PDF file to drive and open it from drive directly!"
+    is_numbering:
+      id0: "Is numbered"
+      id1: "Calculated while numbering, but not numbered"
+      id2: "NOT calculated while numbering and NOT numbered"
+
+  uroles:
+    new:
+      select_role: "Select role:"
+      title: "Add new role"
+      role0: "Chief editor assistant"
+      role0_comment: "Edit any article in publication, possibility to set and change article's proofreader"
+      role1: "Proofreader"
+      role1_comment: "Edit that articles which becomes available by chief editor or his assistants"
+      button: "Add an assistant"
+    edit:
+      title: "Changing settings of assistant"
+      button: "Save changes"
+    index:
+      title: "Publication creating assistants"
+      role0_plural: "Chief editor assistants"  
+      role0_zero: "There is no chief aditor assistant set to this list"
+      role1_plural: "Proofreaders" 
+      role1_zero: "There is no proofreader set to this list"
+      role_you: "You"
+    show:
+      title: "Publication creating assistant"
+      user_not_signed_up: "User with such e-mail isn't registered in system yet"
+      assigned_author: "User has an assigned author: %{author_name}"
+
+  articles:
+    index:
+      title: "Publication's articles"
+      authors: "Article authors"
+      addauthors: "Add authors"
+      proofreading: "Proofreading"
+      publication_state_is_0: "Journal's publication is created but isn't accessible for authors. To allow authors to add articles to current publication, open it!"
+      proofreaders: "Proofreaders"
+      no_proofreader_defined: "Proofreader isn't defined"
+      ready_state:
+        result_yes: "there's"
+        result_no: "no"
+        result_ready: "ready"
+        result_not_ready: "not ready"
+        has_license_agreement: "Lic.agreem.: "
+        has_expert_opinion: "Exp.opin.: "
+        has_review: "Review: "
+        has_english: "English: "
+        has_authors_info: "Authors' info: "
+        has_bibliography: "Bibliography: "
+    edit:
+      title: "Edit article"
+      button: "Update article"
+    new:
+      title: "Add new article to the publication"
+      button: "Add article"
+      author: "Add author"
+    authors:
+      title: "Authors:"
+      button: "Remove"
+    attachments:
+      title: "Other attachments:"
+      changetype: "Change type"
+
+  portions:
+    index: 
+      title: "Static parts of publication"
+      total_pages_count: "Pre-release number of pages in publication:"
+    new: 
+      title: "Adding static part"
+      button: "Add static part"
+    edit:
+      title: "Updating static part"
+      button: "Update static part"
+    pdf:
+      title_pdf: "Creating PDF file"
+      contents: 
+        begin_forming: "Forming a contents..."
+        end_success: "Contents is formed successfully"
+        end_error_no_authors: "This article hasn't any author!"
+        end_error_no_file: "There is no PDF file with article's text ready to publish!"
+        end_error_file_not_pdf: "Article has an non-PDF attachment! It needs to convert file to PDF format first!"
+        end_error_publication_portion_no_file: "Publication has a static section without attached file!"
+        end_error_not_checked_by_author: "Paper of article isn't confirmed by author!"
+        end_error_not_checked_by_chief_or_assistant: "Paper of article isn't confirmed by chief editor or one of his assistants!"
+        end_error_zero_articles: "There is no articles in publication!"
+      annotations_eng:
+        begin_forming: "Forming summary in english..."
+        end_success: "File with summary in english is formed successfully"
+        end_error_no_title: "Title in English is not set!"
+        end_error_no_abstract: "Abstract in English is not set!"
+        end_error_no_keywords: "Keywords in English are not set!"
+        end_error_no_authors: "This article hasn't any author!"
+        end_error_zero_articles: "There is no articles in publication!"
+      authors:
+        begin_forming: "Forming list of authors with regalies..."
+        end_success: "List of authors with regalies is formed successfully"
+        end_error_no_degrees: "Author has no degrees!"
+        end_error_empty_list: "There is no authors in publication!"
+      papers:
+        begin_forming: "Forming list of articles..."
+        end_success: "List of articles is formed successfully"
+        end_error_no_file: "There is no PDF file with article's text ready to publish!"
+        end_error_not_checked_by_author: "Paper of article isn't confirmed by author!"
+        end_error_not_checked_by_chief_or_assistant: "Paper of article isn't confirmed by chief editor or one of his assistants!"
+        end_error_zero_articles: "There is no articles in publication!"
+    is_numbering:
+      id_0: "Numbered"
+      id_1: "Calculated but not numbered"
+      id_2: "NEITHER calculated NOR numbered"
+    badges:
+      auto: "auto"
+      auto_hint: "This static part is formed automatically by system./nPress PDF button to preview the result"
+      add_to_contents: "+contents"
+      add_to_contents_hint: "This static part will be mentioned in contents"
+      not_numbered: "not numbered"
+      not_numbered_hint: "This static part won't have page numbers on its pages"
+      not_listed: "not calculated"
+      not_listed_hint: "This static part will be excluded/nfrom pages counting in publication"
+
+  appointments:
+    list:
+      title: "Article's proofreading"
+      empty: "A proofreader isn't set for this article"
+      date_plan: "Plan date to finish proofreading:"
+      set_by: "Who set this proofreader: "
+      created_at: "set date: "
+    new:
+      appointment: "Add a proofreader"
+      version: "Change proofreader"
+      title: "Article's proofreader"
+      button: "Set a proofreader"
+    edit:
+      title: "Changes in article's proofreader"
+
+  paternities:
+    new:
+      title: "Adding author to article"
+      button: "Add author to article"
+      no_author_in_list: "There is no such author in the list"
+      select_author: "Select author:"
+    show:
+      title: "Article's authors"
+      
+  comments:
+    new:
+      title: "Adding attachment"
+      button: "Add attachment"
+    edit:
+      title: "Editing attachment"
+      button: "Edit attachment"
+    types:
+      type1: "Other documents"
+      type2: "License agreement"
+      type3: "Expert opinion"
+      type4: "Proof of payment"
+      type5: "Images of the article in its original format"
+      type6: "Material review"
+      type7: "Ready bibliography"
+
+      
+  materials:
+    new:
+      material: "Add material"
+      version: "Add new version of material"
+      button: "Add button"
+    edit:
+      title: "Check the correctness of the material"
+      button: "Save changes"
+      pdf_create: "Generate PDF"
+      pdf_create_manually: "OR manually:"
+    show:
+      title: "Version of article's material"
+    list:
+      title: "Article's material"
+      file_not_loaded: "Material is not loaded"
+      already_confirmed: "Material is already confirmed by you"
+      edit: "Check correctness"
+      loaded_date: "Upload date"
+      file_not_converted: "PDF version of material isn't generated!"
+
+  authors:
+    index:
+      title: "Authors list"
+      button: "Add author"
+    show:
+      ask_for_ownage: "This author is me!"
+      currently_selected: "Currently selected"
+      degrees:
+        title: "Degrees list:"
+        empty: "degrees are not set."     
+        button: "Add degree"
+      articles:
+        title: "List of published articles with this author:"
+        empty: "This author isn't mentioned in any article yet."
+        published_empty: "This author isn't mentioned in any published article yet."
+        unpublished_empty: "This author isn't mentioned in any unpublished article yet."
+        published_empty_own: "This author has no published articles yet."
+        unpublished_empty_own: "This author has no article in preparing publications yet."
+    edit:
+      title: "Edit author"
+      button: "Edit author"
+    new:
+      title: "Add author"
+      button: "Add author"
+      
+  degrees:
+    edit:
+      title: "Editing degree"
+      button: "Edit degree"
+    new:
+      title: "Adding degree"
+      button: "Add degree"
+      no_institution_in_list: "There is no such institution in the list"
+  
+  institutions:
+    new:
+      title: "Adding institution"
+      button: "Add institution"
+    edit:
+      title: "Editing institution"
+      button: "Edit institution"
+    index:
+      title: "Institutions list"
+      button: "Add institution"      
+      
+  users:
+    associated_author: "Your profile as an author"
+    security_section: "Security section"
+    articleslist: 
+      title: "List of articles with your name in published publications:"
+      titleown: "List of your published articles:"
+      title_newarticles: "List of articles with your name in preparing publications:"
+      title_newarticles_own: "List of your articles in preparing publications:"
+      set_author: "You didn't fill your author's profile yet!"
+      empty: "You have no article yet"
+      change_author: "Change author"
+    proofreading:
+      title: "List of articles where you are a proofreader"
+      date_plan: "Do before:"
+    journals:
+      title: "Your journals:"
+
+  devise:            
+    passwords:
+      user:
+        send_instructions: "Please check at this e-mail a message with instructions to restore password of your account"
+        change_password: "Change your password"
+        change_password_label: "New password:"
+        change_password_label_confirm: "Confirm password:"
+        change_pass_min_length: "Password length must be at least %{min_pass_len} symbols"
+        change_password_button: "Change password"
+        restore_account_send_email_again: "Didn't receive link to confirm registration?"
+        unlock_account_send_email_again: "Didn't receive link to unlock account?"
+        login_via_provider: "Login via %{provider}"
+    sessions:
+      user:
+        signin:
+          title: "Log in to system"
+          email: "E-mail"
+          current_password: "Password"
+          password: "Password"
+          password_new: "New password"
+          password_retype: "Retype new one"
+          username: "Your name in system"
+        signup:
+          title: "Registration"
+        persons_profile: "Person's profile"
+        edit_profile: "Edit password, delete profile"
+        login: "Log in"
+        register: "Register"
+        logout: "Logout"
+        update: "Save changes"
+        signed_out: "You've signed out"
+        signed_in: "You've signed in successfully"
+        already_signed_out: "You've already signed out"
+        remember_me: "Remember me"
+        cancel_account_title: "Cancel my account"
+        cancel_account: "Cancel account"
+        unhappy: "Unhappy?"
+        invalid: "There is no registered user with such e-mail!"
+        reset_password: "Forgot your password?"
+        reset_password_button: "Send instruction to reset password"
+        reset_password_email: "Account's e-mail:"
+        edit:
+          title: "Edit user"
+    confirmation_2:
+      title: "Resend confirmation instructions"
+      button: "Send instructions again"
+    registrations:
+      user:
+        signed_up: "Welcome! You have signed up successfully."
+        updated: "Your account has been updated successfully."
+        destroyed: "Bye! Your account has been successfully cancelled. We hope to see you again soon."
+        signed_up_but_inactive: "You have signed up successfully. However, we could not sign you in because your account is not yet activated."
+        signed_up_but_locked: "You have signed up successfully. However, we could not sign you in because your account is locked."
+        signed_up_but_unconfirmed: "A message with a confirmation link has been sent to your email address. Please follow the link to activate your account."
+        update_needs_confirmation: "You updated your account successfully, but we need to verify your new email address. Please check your email and follow the confirm link to confirm your new email address."
+    failure:  
+      already_authenticated: "User is already authenticated"
+      user:
+        not_found_in_database: "Wrong user name or password! Check your account information!"
+        unauthenticated: "Please sign in to continue operation!"
+        invalid: "Wrong user name or password! Check your account information!"
+    instructions:    
+      footer: "Regards, WEB-Journal developers team. If you have some questions, you may ask us directly via web.sbornik@gmail.com."
+      confirmation:
+        title: "Confirmation of registration in WEB-Journal system"
+        welcome: "%{username}, welcome!"
+        text: "To confirm your registration in Web-Journal system, please follow the next link:"
+        link: "Confirm e-mail"
+      reset_password:
+        title: "Reset password of WEB-Journal account"
+        welcome: "Welcome, %{email}!"
+        text: "You (or someone else) have requested a link to change your password. You can do this through the link below."
+        link: "Change password"
+        text_2: "If it wasn't you then you may ignore this e-mail."
+      unlock:
+        title: "Unlock of WEB-Journal account"
+        welcome: "Welcome, %{email}!"
+        text: "Your account has been locked due to an excessive number of unsuccessful sign in attempts."
+        text_2: "Click the link below to unlock your account:"
+        link: "Unlock my account"
+        
+
+  activerecord:
+    attributes:
+      journal:
+        title: "Name of journal"
+        subtitle: "Second string"
+        descr: "Description"
+        created_at: "Created at"
+        udk: "UDC"
+        website: "Website"
+        arules: "Rules for authors"
+        logo: "Logo"
+        ISSN: "ISSN"
+      publication:
+        pubno: "Publication no."      
+        pubtxt: "Publication name"
+        publication_status_id: "Publication status"
+        created_at: "Created at"
+        publish_plan: "Publishing date"
+        introduction: "Introduction"
+        website_cover: "Publication logo"
+        publication_cover: "Cover (front side)"
+        pages_multiplicity: "Pages multiplicity"
+        publication_first_page: "First page"
+        publication_second_page: "Second page"
+        publication_editorial_team: "Editorial team"
+        publication_introduction: "Introduction"
+        publication_thanks: "Thanks"
+        publication_last_page: "Last page"
+        publication_cover_end: "Cover (back side)"
+        publication_blank: "Blank page"
+        ISBN: "ISBN"
+      urole:
+        email: "E-mail:"
+        user_id: "User"
+        role_id: "Role in publication"
+      article:
+        title: "Title in native language"
+        title_en: "Title in English"
+        created_at: "Created at"
+        udk: "UDC"
+        annotation: "Abstract in native language"
+        keywords: "Keywords in native language"
+        annotation_en: "Abstract in English"
+        keywords_en: "Keywords in English"
+      portion:
+        ftype: "Type of static part"
+        file: "File"
+        add_to_contents: "This static part will be mentioned in contents"
+        name_in_contents: "Name in contents"
+        is_numbering: "Static part numbering"
+      material:
+        file: "Article's material"
+        file_pdf: "PDF version of material"
+        checked_by_author_id: "The author confirms its correctness"
+        checked_by_proofreader_id: "Proofreader confirms the correctness of this article"
+        checked_by_chief_assistant_id: "Chief assistant confirms the correctness of this article"
+        checked_by_chief_id: "Journal's chief editor confirms the correctness of this article"
+        is_bibliography_ready: "Bibliography is ready"
+        is_images_ready: "Images are ready"
+        is_formulas_ready: "Formulas are ready"
+        pages_count: "%{pages_count} pg"
+      appointment:
+        proofreader_id: "Select proofreader:"
+        date_plan: "Final date by plan:"
+        comment: "Comment:"
+      comment:
+        commenter: "Attachment type:"
+        file: "Attachment:"
+        body: "Description:"      
+      author:
+        name_full_upcase_surname: "Author's full name"
+        name_with_initial: "Author's name briefly"
+        name_with_initial_eng: "Transliterated"
+        email: "E-mail"
+        moretext: "Comment"
+        created_at: "Created at"
+        surname: "Surname"  
+        mainname: "Name"
+        middlename: "Middle name"
+      degree:
+        institution_id: "Institution:"
+        info: "Degree:"
+      institution:
+        title: "Name:"
+        titleingenitive: "Name in genitive:"
+        postaddress: "Postal address:"
+        webaddress: "Web-site:"
+        created_at: "Created at"
+    errors:
+      models:
+        publication:
+          attributes:
+            pubtxt:
+              blank: "You need to define name of Publication!"
+            pubno:
+              blank: "You need to define Publication number!"
+        journal:
+          attributes:
+            title:
+              blank: "You need to define name of Journal!"
+        article:
+          attributes:
+            title:
+              blank: "You need to define name of Article!"
+        comment:
+          attributes:
+            file:
+              spoofed_media_type: "Incorrect or unsupported file type!"
+        paternity:
+          attributes:
+            author_id:
+              blank: "You need to select an author from the list!"
+        author:
+          attributes:
+            surname:
+              blank: "You need to define author's surname!"
+            mainname:
+              blank: "You need to define author's main name!"
+        degree:
+          attributes:
+            info:
+              blank: "You need to define a degree for this author!"
+        institution:
+          attributes:
+            title:
+              blank: "You need to define an official name of Institution!"
+            postaddress:
+              blank: "You need to define an official postal address of Institution!"
+        user:
+          attributes:
+            password_confirmation:
+              confirmation: "Password and retyped password are not the same!"
+            password:
+              too_short: "Password is too short!"
+            current_password:
+              blank: "Current password field is blank!"
+              invalid: "Current password is invalid!"
+            email:
+              blank: "You need to define e-mail"
+              already_confirmed: "This e-mail is already confirmed! To confirm it twice isn't necessary"
+          attributes:
+            password:
+              blank: "You need to define password"
+              not_found: "This e-mail is absent in our database! YOu need to register first!"
+  errors:
+    messages:
+      not_saved: "Registration is unsuccessfull!"
+      
+  descriptions:
+    articles:
+      new:
+        title: "Fill the basic information about article. All other data (authors' list, article text, additional files) will be able to fill on the next step"
+        
+  notify_messages:
+    new_article_added:
+      title:
+        author: "Article %{article} is accepted"
+        chief_editor: 'Article %{article} is added to publication'
+        chief_assistant: 'Article %{article} is added to publication'
+      body:
+        author: "<h2>Your article is accepted to the publication!</h2><strong>Journal:</strong> %{journal}<br/><strong>Publication:</strong> %{publication} <br/><strong>Article:</strong> %{article} <br/><br>You'll receive new notification after Chief editor accept your article to be included to the journal's publication.<br/><h3>Your next actions:</h3><ul><li>Add article's material, prepared according to journal's rules: %{journal_rules}</li><li>Fill list of article's authors</li><li>Add additional materials to the article: editable images of article, License agreement, Expert opinion, other documents.</li></ul>All these materials allow proofreaders to prepare your article faster, so it will be ready to be included in the publication.<br/><br/> Open article's page and add materials: %{article}"
+        chief_editor: "<h2>New article is added to the publication!</h2><strong>Journal:</strong> %{journal}<br/><strong>Publication:</strong> %{publication}<br/><strong>Article:</strong> %{article} <br/><strong>Author:</strong> %{author}<br/><br/><h3>Your next actions:</h3><ul><li>Check article's materials manually</li><li>Or delegate this action - set a proofreader to article</li></ul>You received this article because you are the Chief editor of the %{journal} journal.<br/>Open article's page: %{article}"
+        chief_assistant: "<h2>New article is added to the publication!</h2><strong>Journal:</strong> %{journal}<br/><strong>Publication:</strong> %{publication}<br/><strong>Article:</strong> %{article} <br/><strong>Author:</strong> %{author}<br/><br/><h3>Your next actions:</h3><ul><li>Check article's materials manually</li><li>Or delegate this action - set a proofreader to article</li></ul>You received this article because you are the chief assistant of the %{journal} journal.<br/>Open article's page: %{article}"
+    role_is_appointed:
+      title:
+        proofreader: "The article's proofreader role is appointed to you"
+        chief_assistant: "The chief assistant role is appointed to you"
+      body: 
+        proofreader: "<h2>The proofreader role is appointed to you!</h2><strong>Journal:</strong> %{journal}<br/><strong>Publication:</strong> %{publication}<br/><strong>Article:</strong> %{article}<br/><strong>Who assigned the role:</strong> %{chief}, %{chief_role}<h3>Your next actions:</h3><ul><li>Read journal's rules for articles: %{journal_rules}</li><li>Open article %{article} and check it's correction according to journal's rules</li><li>Download file with article material and check it's correction according to journal's rules: %{article} </li><li>Correct material and upload it: %{article}</li></ul>You may always contact with article's author to solve possible imprecisions"
+        chief_assistant: "<h2>The chief assistant role is appointed to you!</h2><strong>Journal:</strong> %{journal}<br/> <strong>Publication:</strong> %{publication}<br/><strong>Who assigned the role:</strong> %{chief}, Chief editor<h3>Your next actions:</h3><h4>As a chief assistant:</h4><ul><li>Set proofreaders for publication's articles: %{articles_list}</li><li>Control proofreader's work and speed on the same page</li><li>Remove incorrect or wrong articles from publication</li><li>Correspond with article's authors, proofreaders and Chief editor</li><li>Generate pre-PDF file of the whole publication: %{publication_pdf}</li></ul><h4>As a proofreader:</h4><ul><li>Read journal's rules for articles: %{journal_rules}</li><li>Open any article in publication and check it's correction according to journal's rules</li><li>Download file with article material and check it's correction according to journal's rules</li><li>Correct material and upload it</li></ul>You may always contact with article author to solve possible imprecisions"
+        
+
+  mailboxer:
+    message_mailer:
+      subject_new: "%{subject}"
+      subject_reply: "RE: %{subject}"
+    

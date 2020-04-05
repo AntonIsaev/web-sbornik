@@ -1,0 +1,127 @@
+<%- model_class = Material -%>
+
+<% if user_signed_in? 
+    user_is_a_chief_assistant = @publication.uroles.where('user_id = '+current_user.id.to_s+' AND chief_id = '+@journal.user_id.to_s+' AND role_id = 0').count != 0
+    can_user_made_actions = current_user.id == @article.user_id || current_user.id == @article.proofreader_id || current_user.id == @journal.user_id || user_is_a_chief_assistant || current_user.admin? 
+  else 
+    can_user_made_actions = false  
+    user_is_a_chief_assistant = false
+  end %>
+
+<% @materials = @article.materials.order('file_updated_at DESC') %>
+<div>
+<ul id="sortable_materials" class="list-group"> 
+
+<% p = 0 %>
+
+<% @materials.each do |material| %>
+    <% if p == 0 %>
+      <li class="list-group-item list-group-item-info" id='material_<%= material.position %>'>
+    <% else %>  
+      <li class="list-group-item" id='material_<%= material.position %>'>
+    <% end %>
+  
+    <% if p == 0 %>
+      <h4 class="list-group-item-heading">
+    <% end %>
+
+    <%= t('materials.list.loaded_date', :default => 'en.materials.list.loaded_date') %>: <%= material.created_at %> 
+    <% if can_user_made_actions %>  
+      <% if p == 0 %>
+        <% if (current_user.id == @article.user_id && material.checked_by_author_id == 0) ||
+              (current_user.id == @article.proofreader_id && material.checked_by_proofreader_id == 0) ||
+              (user_is_a_chief_assistant && material.checked_by_chief_assistant_id == 0) ||
+              (current_user.id == @journal.user_id && material.checked_by_chief_id == 0)
+            %>
+            <%= link_to t('materials.list.edit', :default => t('en.materials.list.edit')), 
+                          edit_journal_publication_article_material_path(@journal, @publication, @article, material),
+                          :class => 'btn btn-default btn-xs' %>
+        <% else %>                
+            <%= link_to t('materials.list.already_confirmed', :default => t('en.materials.list.already_confirmed')), 
+                          edit_journal_publication_article_material_path(@journal, @publication, @article, material),
+                          :class => 'btn btn-success btn-xs' %>
+        <% end %>  
+      <% end %>  
+      <%= link_to t('.destroy', :default => t("helpers.links.destroy")),
+                  journal_publication_article_material_path(@journal, @publication, @article, material),
+                  :method => 'delete',
+                  :data => { :confirm => t('.confirm', :default => t("helpers.links.confirm", :default => 'Are you sure?')) },
+                  :class => 'btn btn-danger btn-xs' %>
+    <% end %>   
+
+    <% if p == 0 %>
+      <% p = 1 %>
+      </h4>    
+    <% end %>
+    
+  <div class="small">
+    <% if not material.file.blank? %>
+  
+      <% if can_user_made_actions %>
+        <%= link_to material.file_file_name, material.file.url %>
+      <% else %>  
+        <%= material.file_file_name %>
+      <% end %>
+    <% else %>
+      <%= t('materials.list.file_not_loaded', :default => t('en.materials.list.file_not_loaded')) %>
+    <% end %>
+    <% if not material.file_pdf.blank? %>
+    | 
+  
+      <% if can_user_made_actions %>
+        <%= link_to material.file_pdf_file_name, material.file_pdf.url %>
+      <% else %>  
+        <%= material.file_pdf_file_name %>
+      <% end %>
+    <% else %>
+      <%= t('materials.list.file_not_converted', :default => t('en.materials.list.file_not_converted')) %>
+    <% end %>
+    <% if !material.comment.blank? %>
+      | 
+      <strong> <%= material.comment %> </strong>
+    <% end %>  
+   </div>
+  </li> 
+<% end %>
+
+</ul>
+</div>
+ 
+<% if user_signed_in? %>
+  <% if can_user_made_actions %>
+    <% if @materials.count == 0 %>
+      <%= link_to t('materials.new.material', :default => t('en.materials.new.material')), new_journal_publication_article_material_path(@journal, @publication, @article), :class => "btn btn-primary" %>
+    <% else %>  
+      <%= link_to t('materials.new.version', :default => t('en.materials.new.version')), new_journal_publication_article_material_path(@journal, @publication, @article), :class => "btn btn-primary" %>
+    <% end %>
+  <% end %>  
+<% end %>
+
+
+<% if user_signed_in? %>
+  <% if can_user_made_actions %>
+    <!-- script type="text/javascript">
+      $(document).ready(function () { 
+        $("#sortable_materials").sortable({
+          axis: 'y',
+          dropOnEmpty: false,
+          cursor: 'move',
+          items: 'li',
+          opacity: 0.7,
+          scroll: true,
+          update: function () {
+            $.ajax({
+              type: 'post',
+              url: '<%= sort_journal_publication_article_materials_path(@journal, @publication, @article) %>',
+              data: $("#sortable_materials").sortable('serialize'),
+              dataType: 'script',
+              complete: function(request){
+                $("#sortable_materials").effect('highlight');
+              }
+            });
+          }
+        });
+      });
+    </script -->
+  <% end %>
+<% end %>

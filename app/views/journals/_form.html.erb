@@ -1,0 +1,141 @@
+<%= form_for @journal, :html => { :class => "form-horizontal journal" } do |f| %>
+
+  <% if @journal.errors.any? %>
+    <div id="error_expl" class="panel panel-danger">
+      <div class="panel-heading">
+        <h3 class="panel-title"><%= pluralize(@journal.errors.count, "error") %> prohibited this journal from being saved:</h3>
+      </div>
+      <div class="panel-body">
+        <ul>
+        <% @journal.errors.full_messages.each do |msg| %>
+          <li><%= msg %></li>
+        <% end %>
+        </ul>
+      </div>
+    </div>
+  <% end %>
+
+  <div class="form-group">
+    <%= f.label :udk, :class => 'control-label col-lg-2' %>
+    <div class="col-lg-10">
+      <%= hb('journal_udk') %>
+      <%= f.text_field :udk, :class => 'form-control' %>
+      <%= he('journal_udk') %>
+    </div>
+    <%=f.error_span(:udk) %>
+  </div>
+  
+  <div class="form-group">
+    <%= f.label :ISSN, :class => 'control-label col-lg-2' %>
+    <div class="col-lg-8">
+      <%= hb('journal_issn') %>
+      <%= f.text_field :ISSN, :class => 'form-control' %>
+      <%= he('journal_issn') %>
+    </div>
+    <div class="col-lg-2" style="text-align:right;">
+      <%= link_to t('journals.edit.get_ISSN_text', :default => "Get ISSN"), t('journals.edit.get_ISSN_link', :default => "https://www.google.com/?q=How+to+get+ISSN"), :class => 'btn btn-default', :target => "_blank" %> 
+    </div>
+    <%=f.error_span(:ISSN) %>
+  </div>
+  
+  <div class="form-group">
+    <%= f.label :title, :class => 'control-label col-lg-2' %>
+    <div class="col-lg-10">
+      <%= hb('journal_title') %>
+      <%= f.text_field :title, :class => 'form-control' %>
+      <%= he('journal_title') %>
+    </div>
+    <%=f.error_span(:title) %>
+  </div>
+  
+  <div class="form-group">
+    <%= f.label :website, :class => 'control-label col-lg-2' %>
+    <div class="col-lg-10">
+      <%= hb('journal_website') %>
+      <%= f.text_field :website, :class => 'form-control' %>
+      <%= he('journal_website') %>
+    </div>
+    <%=f.error_span(:website) %>
+  </div>
+
+  <div class="form-group">
+    <%= f.label :descr, :class => 'control-label col-lg-2' %>
+    <div class="col-lg-10">
+      <%= hb('journal_descr') %>
+      <%= f.text_area :descr, :class => 'form-control', :rows => '5' %>
+      <%= he('journal_descr') %>
+    </div>
+    <%=f.error_span(:descr) %>
+  </div>
+  
+  <div class="form-group">
+    <%= f.label :arules, :class => 'control-label col-lg-2' %>
+    <% if not @journal.arules? %>
+      <div class="col-lg-10">
+        <%= hb('journal_arules') %>
+        <%= f.file_field :arules, :class => 'form-control' %>
+        <%= he('journal_arules') %>
+      </div>
+    <% else %>  
+      <div class="col-lg-4">
+        <%= hb('journal_arules') %>
+        <%= f.file_field :arules, :class => 'form-control' %>
+        <%= he('journal_arules') %>
+      </div>
+      <div class="col-lg-2">
+        <p class='form-control-static'><%= t('helpers.titles.file_downloaded_name', :default => 'Loaded file:') %></p>
+      </div>
+      <div class="col-lg-4">
+        <p class='form-control-static'><a href="<%= @journal.arules.url %>"><%= @journal.arules_file_name %></a></p>
+      </div>
+      <% end %>
+    <%=f.error_span(:arules) %>
+  </div> 
+  
+  <div class="form-group">
+    <%= f.label :logo, :class => 'control-label col-lg-2' %>
+    <div class="col-lg-4">
+      <%= hb('journal_logo') %>
+      <%= f.file_field :logo, :class => 'form-control' %>
+      <%= he('journal_logo') %>
+    </div>
+    <% if @journal.logo? %>
+      <div class="col-lg-2">
+        <p class='form-control-static'><%= t('helpers.titles.file_downloaded_name', :default => 'Loaded file:') %></p>
+      </div>
+      <div class="col-lg-4">
+        <img src="<%= @journal.logo.url %>" width="150px">
+      </div>
+      <% end %>
+    <%=f.error_span(:logo) %>
+  </div> 
+  
+  <% if params[:chief_id] != nil %>
+    <%= hidden_field_tag(:chief_id, params[:chief_id]) %>
+  <% end %>  
+
+  <div class="form-group">
+    <div class="col-lg-push-2 col-lg-10">
+      <% if @journal.id? %>
+        <%= f.submit t('journals.edit.button', :default => "Update journal"), :class => 'btn btn-primary' %>
+        <%= link_to t('.cancel', :default => t("helpers.links.cancel")),
+                    journal_path(@journal), :class => 'btn btn-default' %>
+      <% else %>  
+        <%= f.submit t('journals.new.button', :default => "New journal"), :class => 'btn btn-primary' %>
+        <%= link_to t('.cancel', :default => t("helpers.links.cancel")),
+                    journals_path, :class => 'btn btn-default' %>
+      <% end %>  
+    </div>
+    <% if @journal.id? %>
+      <div class="col-lg-2 text-right">
+		<%= link_to t('helpers.links.destroy'),
+					journal_path(@journal),
+					:method => 'delete', 
+					:data => { :confirm => t('helpers.links.confirm') },
+					:class => 'btn btn-danger' %>
+	  </div>
+    <% end %>
+
+  </div>
+
+<% end %>

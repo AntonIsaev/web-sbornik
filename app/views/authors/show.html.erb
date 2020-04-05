@@ -1,0 +1,178 @@
+<%- model_class = Author -%>
+<div class="page-header">
+  <h1><%= @author.name_full_upcase_surname %></h1>
+</div>
+
+<dl class="dl-horizontal">
+  <dt><strong><%= model_class.human_attribute_name(:name_full_upcase_surname) %>:</strong></dt>
+  <dd><%= @author.name_full %></dd>
+  <dt><strong><%= model_class.human_attribute_name(:name_with_initial) %>:</strong></dt>
+  <dd><%= @author.name_with_initial %></dd>
+  <dt><strong><%= model_class.human_attribute_name(:name_with_initial_eng) %>:</strong></dt>
+  <dd><%= @author.name_with_initial_eng %></dd>
+  <% if user_signed_in? %>
+    <% if current_user.id == @author.user_id %>
+      <dt><strong><%= model_class.human_attribute_name(:email) %>:</strong></dt>
+      <dd><%= @author.email %></dd>
+      <dt><strong><%= model_class.human_attribute_name(:moretext) %>:</strong></dt>
+      <dd><%= @author.moretext %></dd>
+    <% end %>  
+  <% end %>  
+</dl>
+
+<% if params[:journal_id] != nil %>
+  <% @journal = Journal.find(params[:journal_id]) %>
+  <% @publication = @journal.publications.find(params[:publication_id]) %>
+  <% @article = @publication.articles.find(params[:article_id]) %>
+  
+  <%= link_to t('.back', :default => t("helpers.links.back")),
+                journal_publication_article_path(@journal, @publication, @article), :class => 'btn btn-default'  %>
+  <% if user_signed_in? %>    
+    <% if current_user.id == @author.user_id %>
+      <%= link_to t('.edit', :default => t("helpers.links.edit")),
+                    edit_author_path(@author, :journal_id => @journal.id, :publication_id => @publication.id, :article_id => @article.id), :class => 'btn btn-primary' %>
+    <% end %>                
+
+    <% if current_user.id == @author.user_id %>
+      <%= link_to t('.destroy', :default => t("helpers.links.destroy")),
+                    author_path(@author, :journal_id => @journal.id, :publication_id => @publication.id, :article_id => @article.id),
+                    :method => 'delete',
+                    :data => { :confirm => t('.confirm', :default => t("helpers.links.confirm", :default => 'Are you sure?')) },
+                    :class => 'btn btn-danger' %>
+    <% end %>                
+  <% end %>                
+<% else %>
+  <%= link_to t('.back', :default => t("helpers.links.back")),
+                authors_path, :class => 'btn btn-default'  %>
+  <% if user_signed_in? %>              
+    <% if current_user.id == @author.user_id %>
+      <%= link_to t('.edit', :default => t("helpers.links.edit")),
+                    edit_author_path(@author), :class => 'btn btn-default' %>
+    <% end %>                  
+    <% if current_user.id == @author.user_id %>
+      <%= link_to t('.destroy', :default => t("helpers.links.destroy")),
+                    author_path(@author),
+                    :method => 'delete',
+                    :data => { :confirm => t('.confirm', :default => t("helpers.links.confirm", :default => 'Are you sure?')) },
+                    :class => 'btn btn-danger' %>
+    <% end %>  
+  <% end %>                
+<% end %>
+
+  <% if user_signed_in? %>              
+    <% if current_user.author_id == @author.id && current_user.id != @author.user_id %>    
+      <%= link_to t('authors.show.ask_for_ownage', :default => "This author is me!"),
+                    '#', :class => 'btn btn-danger' %>
+    <% end %>
+  <% end %>  
+
+
+
+<h2><%= t('authors.show.degrees.title', :default => "Degrees list:") %></h2>
+    
+<ul id="sortable" class="list-group">
+<% if @author.degrees.count == 0 %>
+  <li class="list-group-item list-group-item-warning">
+    <%= t('authors.show.degrees.empty', :default => "degrees are not set.") %>
+  </li>  
+<% else %>
+    <% @author.degrees.order('position').each do |d| %>
+    <li class="list-group-item" id="degree_<%= d.position %>">
+      <% if d.institution != nil %>
+        <% if d.institution.titleingenitive!= nil %>  
+          <%= d.info %> <%= link_to d.institution.titleingenitive, institution_path(d.institution) %>
+        <% else %>
+          <%= d.info %> <%= link_to d.institution.title, institution_path(d.institution) %>
+        <% end %>
+      <% else %>
+        <%= d.info %>
+      <% end %>
+      
+      <% if user_signed_in? %>              
+        <% if params[:journal_id]!= nil %>
+          <% @journal = Journal.find(params[:journal_id]) %>
+          <% @publication = @journal.publications.find(params[:publication_id]) %>
+          <% @article = @publication.articles.find(params[:article_id]) %>
+        
+          <% if current_user.id == @author.user_id %>
+            <%= link_to t('.edit', :default => t("helpers.links.edit")),
+                          edit_author_degree_path(@author, d, :journal_id => @journal.id, :publication_id => @publication.id, :article_id => @article.id), 
+                          :class => 'btn btn-default btn-xs' %>
+          <% end %>                
+          <% if current_user.id == @author.user_id %>
+            <%= link_to t('helpers.links.remove', :default => "Remove"),
+                          author_degree_path(@author, d, :journal_id => @journal.id, :publication_id => @publication.id, :article_id => @article.id),
+                          :method => 'delete',
+                          :data => { :confirm => t('.confirm', :default => t("helpers.links.confirm", :default => 'Are you sure?')) },
+                          :class => 'btn btn-info btn-xs' %>
+          <% end %>                
+        <% else %>
+          <% if current_user.id == @author.user_id %>
+            <%= link_to t('.edit', :default => t("helpers.links.edit")),
+                          edit_author_degree_path(@author, d), 
+                          :class => 'btn btn-default btn-xs' %>
+          <% end %>                
+          
+          <% if current_user.id == @author.user_id %>
+            <%= link_to t('helpers.links.remove', :default => "Remove"),
+                          author_degree_path(@author, d),
+                          :method => 'delete',
+                          :data => { :confirm => t('.confirm', :default => t("helpers.links.confirm", :default => 'Are you sure?')) },
+                          :class => 'btn btn-info btn-xs' %>
+          <% end %>                  
+        <% end %>
+      <% end %>                
+      
+    </li>
+    <% end %>
+    
+<% end %>
+</ul>
+    
+<% if user_signed_in? %>              
+  <% if current_user.id == @author.user_id %>
+<div>
+  <% if params[:journal_id] != nil %>
+    <%= link_to t('authors.show.degrees.button', :default => 'Add degree'), new_author_degree_path(@author, :journal_id => @journal.id, :publication_id => @publication.id, :article_id => @article.id), :class => 'btn btn-primary'%> 
+  <% else %>
+    <%= link_to t('authors.show.degrees.button', :default => 'Add degree'), new_author_degree_path(@author), :class => 'btn btn-primary'%> 
+  <% end %>
+</div>
+  <% end %>
+<% end %>
+
+<% if user_signed_in? %> 
+  <% if current_user.id == @author.user_id || (@journal != nil && @publication != nil && Urole.where('user_id = '+current_user.id.to_s+' AND chief_id = '+@journal.user_id.to_s+' AND publication_id = '+@publication.id.to_s).count != 0) %>
+<script type="text/javascript">
+var degrees_sort;
+$(document).on('turbolinks:load', degrees_sort);
+degrees_sort = function() { 
+  $("#sortable").sortable({
+    axis: 'y',
+    dropOnEmpty: false,
+    cursor: 'move',
+    items: 'li',
+    opacity: 0.7,
+    scroll: true,
+    update: function () {
+      $.ajax({
+        type: 'post',
+        url: '<%= sort_author_degrees_path(@author) %>',
+        data: $("#sortable").sortable('serialize'),
+        dataType: 'script',
+        complete: function(request){
+          $("#sortable").effect('highlight');
+        }
+      });
+    }
+  });
+};
+window.onload = degrees_sort();
+</script>
+<% end %>
+<% end %>
+
+<h2><%= t('authors.show.articles.title', :default => "List of articles of this author:") %></h2>
+
+<%= render 'articleslist' %>
+  

@@ -1,0 +1,26 @@
+<% provide(:title, t("portions.pdf.title_pdf") + ": " + t("portions.types.t"+@portion.ftype.to_s)) %> 
+
+<h1><%= t('portions.pdf.title_pdf') %></h1>
+<h2><%= t("portions.types.t"+@portion.ftype.to_s) %></h2>
+
+  <% if @portion.ftype == 8 %>
+    <%= render 'pdf_authors' %>
+  <% end %>
+
+  <% if @portion.ftype == 7 %>
+    <%= render 'pdf_annotations_eng' %>
+  <% end %>
+ 
+  <% if @portion.ftype == 6 %>
+    <%= render 'pdf_papers' %>
+  <% end %>
+
+  <% if @portion.ftype == 9 %>
+    <%= render 'pdf_contents' %>
+  <% end %>
+  
+<% if global_param('auto_convert_to_pdf') == '1' %>  
+  <%= link_to t('helpers.links.open'), @portion.file.url, :class => 'btn btn-primary' %>
+<% else %>  
+  <%= link_to t('helpers.links.back'), journal_publication_path(@journal, @publication), :class => 'btn btn-primary' %>
+<% end %>  

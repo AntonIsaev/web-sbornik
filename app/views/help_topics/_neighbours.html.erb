@@ -1,0 +1,21 @@
+<% if @curr_help_topic != nil
+	c = @curr_help_topic.neighbour_id
+  else
+    c = @help_topics.count
+  end  
+  i = 0 %>
+  
+<% if c == 0 %>  
+  <option selected><%= t('help_topics.new.first') %></option>
+<% else %>  
+  <option><%= t('help_topics.new.first') %></option>
+<% end %> 
+ 
+<% @help_topics.each do |help_topic| %>
+  <% i = i+1 %>
+  <% if i == c %>
+    <option selected value="<%= help_topic.id %>"><%= help_topic.title %></option>
+  <% else %>	
+    <option value="<%= help_topic.id %>"><%= help_topic.title %></option>
+  <% end %>
+<% end %>  

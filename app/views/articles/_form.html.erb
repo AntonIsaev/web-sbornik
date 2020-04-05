@@ -1,0 +1,82 @@
+<% if !(@article.title?) %>
+  <div class="page-header col-lg-6">
+    <div class="well" style="margin-bottom:0px;">
+      <small><%= t('descriptions.articles.new.title') %></small>
+    </div>
+  </div>
+<% end %>  
+
+<%= form_for [@journal, @publication, @article], :html => { :class => "form-horizontal article" } do |f| %>
+
+  <div class="form-group">
+    <%= f.label :title, :class => 'control-label col-lg-2' %>
+    <div class="col-lg-10">
+      <%= f.text_field :title, :class => 'form-control' %>
+    </div>
+    <%= f.error_span(:title) %>
+  </div>
+
+  <div class="form-group">
+    <%= f.label :title_en, :class => 'control-label col-lg-2' %>
+    <div class="col-lg-10">
+      <%= f.text_field :title_en, :class => 'form-control' %>
+    </div>
+    <%= f.error_span(:title_en) %>
+  </div>
+
+  <div class="form-group">
+    <%= f.label :udk, :class => 'control-label col-lg-2' %>
+    <div class="col-lg-10">
+      <%= f.text_field :udk, :class => 'form-control' %>
+    </div>
+    <%= f.error_span(:udk) %>
+  </div>
+
+  <div class="form-group">
+    <%= f.label :annotation, :class => 'control-label col-lg-2' %>
+    <div class="col-lg-10">
+      <%= f.text_area :annotation, :class => 'form-control', :rows => "3" %>
+    </div>
+    <%= f.error_span(:annotation) %>
+  </div>
+
+  <div class="form-group">
+    <%= f.label :keywords, :class => 'control-label col-lg-2' %>
+    <div class="col-lg-10">
+      <%= f.text_area :keywords, :class => 'form-control', :rows => "2" %>
+    </div>
+    <%= f.error_span(:keywords) %>
+  </div>
+
+  <div class="form-group">
+    <%= f.label :annotation_en, :class => 'control-label col-lg-2' %>
+    <div class="col-lg-10">
+      <%= f.text_area :annotation_en, :class => 'form-control', :rows => "3" %>
+    </div>
+    <%= f.error_span(:annotation_en) %>
+  </div>
+
+  <div class="form-group">
+    <%= f.label :keywords_en, :class => 'control-label col-lg-2' %>
+    <div class="col-lg-10">
+      <%= f.text_area :keywords_en, :class => 'form-control', :rows => "2" %>
+    </div>
+    <%= f.error_span(:keywords_en) %>
+  </div>
+
+  <div class="form-group">
+    <div class="col-lg-offset-2 col-lg-10">
+     <% if @article.id != nil %>
+        <%= f.submit t('articles.edit.button', :default => "Update article"), :class => 'btn btn-primary' %>
+        <%= link_to t('.cancel', :default => t("helpers.links.cancel")),
+                  journal_publication_article_path(@journal, @publication, @article), :class => 'btn btn-default' %>
+      <% else %>  
+        <%= f.submit t('articles.new.button', :default => "Add article"), :class => 'btn btn-primary' %>
+        <%= link_to t('.cancel', :default => t("helpers.links.cancel")),
+                  journal_publication_articles_path(@journal, @publication), :class => 'btn btn-default' %>
+      <% end %>   
+
+    </div>
+  </div>
+
+<% end %>

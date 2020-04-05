@@ -1,0 +1,41 @@
+<% if not comment.file_file_name.empty? %>
+  <strong>
+    <% 
+    can_download_attachment = false
+    if user_signed_in?
+      if @publication.publication_status_id = 2
+        can_download_attachment = current_user.id == @article.user_id || current_user.admin?
+      elsif @publication.publication_status_id = 1
+        can_download_attachment = current_user.id == @article.user_id || current_user.admin?
+      end
+    end
+    %>
+  
+    <% if can_download_attachment %>
+      <%= link_to comment.file_file_name, comment.file.url %>
+    <% else %>  
+      <%= comment.file_file_name %>
+    <% end %>
+  </strong> 
+<% else %>
+  <strong><%= comment.commenter %></strong> :
+<% end %>
+  <% if user_signed_in? && current_user.id == @article.user_id %>  
+    <%= link_to t("articles.attachments.changetype", :default => "Change type"), 
+                  edit_journal_publication_article_comment_path(@journal, @publication, @article, comment),
+                  :class => 'btn btn-default btn-xs' %>
+    <%= link_to t('.destroy', :default => t("helpers.links.destroy")),
+                  journal_publication_article_comment_path(@journal, @publication, @article, comment),
+                  :method => 'delete',
+                  :data => { :confirm => t('.confirm', :default => t("helpers.links.confirm", :default => 'Are you sure?')) },
+                  :class => 'btn btn-danger btn-xs' %>
+  <% end %>              
+              
+<div class="small">
+
+Загружено: <%= comment.created_at %> 
+<% if not comment.body.empty?  %>
+. Примечание: <%= comment.body %>
+<% end %>
+
+</div>

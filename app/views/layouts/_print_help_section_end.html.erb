@@ -1,0 +1,43 @@
+<%# Small buttons at any item in the screen - final section # %>
+
+<% help_item_id = locals[:help_item_id] %>
+<% has_item_help = has_help(help_item_id) %>
+
+<% if has_item_help > -1 || is_user_super_admin %>
+    <span class="input-group-btn" style="vertical-align: top;">
+      <% if has_item_help > -1 %>
+        <%= link_to('#', :class => 'btn btn-default', :onClick => 'ShowShortHelp("'+help_item_id+'_help"); return false;') do %>
+          <span class="glyphicon glyphicon-question-sign"></span>
+        <% end %>
+      <% end %>
+      <% if is_user_super_admin %>
+          <% if has_item_help > -1 %>
+            <%= link_to(edit_help_topic_path(HelpTopic.find(has_item_help)), :class => 'btn btn-info', :target => '_blank') do %>
+              <span class="glyphicon glyphicon-pencil"></span>
+            <% end %>
+          <% else %>
+            <%= link_to(new_help_topic_path(:help_item_id => help_item_id), :class => 'btn btn-info', :target => '_blank') do %>
+              <span class="glyphicon glyphicon-plus"></span>
+            <% end %>
+          <% end %>
+      <% end %>
+    </span>
+  </div>
+
+  <% if has_item_help > -1 %>
+    <div class="clearfix"></div>
+    <div id="<%= help_item_id %>_help" style="display:none;">
+      <ul class="list-group">
+        <li class="list-group-item list-group-item-info">
+          <div style="float:right">
+            <%= link_to(help_topic_path(HelpTopic.find(has_item_help)), :class => 'btn btn-default btn-xs', :target => '_blank') do %>
+              <span class="glyphicon glyphicon-share"></span>
+              <%= t('helpers.links.more_info') %>
+            <% end %>
+          </div>
+          <h5><%= HelpTopic.find(has_item_help).short_text.html_safe %></h5>
+        </li>
+      </ul>
+    </div>
+  <% end %>
+<% end %>

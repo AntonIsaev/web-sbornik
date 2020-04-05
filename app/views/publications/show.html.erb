@@ -1,0 +1,82 @@
+<%- model_class = Publication -%>
+<% provide(:title, @publication.title) %> 
+
+<% can_user_made_actions = user_signed_in? && (current_user.id == @journal.user_id || @publication.uroles.where('user_id = '+current_user.id.to_s+' AND chief_id = '+@journal.user_id.to_s+' AND role_id = 0').count != 0 || current_user.admin?) %>
+
+<div class="col-lg-3">
+  <a href="<%= @publication.website_cover.url %>">
+    <img src="<%= @publication.website_cover.url %>" width="200px" height="282px" class="img-thumbnail" style="margin-left: 10px; margin-top: 25px;">
+  </a>
+  <p>&nbsp;</p>
+</div>
+<div class="col-lg-9">
+  <div class="page-header">
+    <h1> <%= @publication.title %> </h1>
+  </div>
+<h4 style="white-space: pre-wrap; margin-top:-10px;"><% if @publication.introduction != nil && @publication.introduction != '' %><%= @publication.introduction %><% else %><%= t('publications.show.no_introduction', :default => 'An introduction text must be there')  %><% end %></h4>
+</div>
+<div class="clearfix"></div>
+  
+<dl class="dl-horizontal"> 
+  <dt><strong><%= model_class.human_attribute_name(:publish_plan) %></strong>:</dt>
+  <dd><%= @publication.publish_plan %></dd>
+  <dt><strong><%= model_class.human_attribute_name(:publication_status_id) %></strong>:</dt>
+  <dd><%= @publication.pub_status %></dd>
+  <dt><strong><%= model_class.human_attribute_name(:ISBN) %></strong>:</dt>
+  <dd><%= @publication.ISBN %></dd>
+  <dt><strong><%= model_class.human_attribute_name(:pages_multiplicity) %></strong>:</dt>
+  <dd><%= @publication.pages_multiplicity.to_s %></dd>
+  <dt><strong><%= t('activerecord.attributes.journal.arules', :default => 'en.activerecord.attributes.journal.arules') %></strong>:</dt>
+  <dd><%= link_to t('helpers.links.open', :default => 'en.helpers.links.open'), @journal.arules.url %></dd>
+
+<% if can_user_made_actions %>  
+  <div class="page-header col-lg-8" style="margin-bottom:0px;">
+    <h3><%= t('publications.show.parts', :default => t('en.publications.show.parts')) %></h3>
+  </div>
+  <div class="page-header col-lg-4" style="margin-bottom:0px;">
+    <h3 style="margin-bottom: 0px;text-align:right;"><%= link_to t('portions.new.button', :default => t('en.portions.new.button')), new_journal_publication_portion_path(@journal, @publication), :class => "btn btn-primary" %>
+    <%= link_to t('publications.show.pdf', :default => "PDF"), journal_publication_pdf_path(@journal, @publication), :class => 'btn btn-default' %></h3>
+  </div>
+  <%= render 'portions/portions' %>
+  
+  <div class="page-header col-lg-8" style="margin-bottom:0px;">
+    <h3><%= t('publications.show.uroles', :default => t('en.publications.show.uroles')) %></h3>
+  </div>
+  <div class="page-header col-lg-4" style="margin-bottom:0px;">
+    <h3 style="margin-bottom: 0px;text-align:right;"><%= link_to t('uroles.new.button', :default => t('en.uroles.new.button')), new_journal_publication_urole_path(@journal, @publication), :class => "btn btn-primary" %>
+  </div>
+  <%= render 'uroles/uroles' %>
+  
+<% end %>
+  
+  
+</dl>
+
+
+
+<div class="col-lg-12">
+<%= link_to t('.back', :default => t("helpers.links.back")),
+              journal_publications_path(@journal), :class => 'btn btn-default'  %>
+<% if user_signed_in? %>              
+
+  <% if can_user_made_actions %>
+    <%= link_to t('.edit', :default => t("helpers.links.edit")),
+                  edit_journal_publication_path(@journal, @publication), :class => 'btn btn-default' %>
+  <% end %>                
+<% end %>                
+
+ <% if can_user_made_actions %>
+   <% already_have_my_articles = (@publication.publication_status_id == 1 && (@publication.articles.where('articles.user_id = '+current_user.id.to_s).count != 0) && current_user.author_id != nil) %>
+<% else %>   
+  <% already_have_my_articles = false %>
+<% end %>
+
+<% if already_have_my_articles %>
+  <%= link_to t('publications.articleslist_my', :default => "My articles"),
+                journal_publication_articles_path(@journal, @publication), :class => 'btn btn-primary' %>
+<% elsif can_user_made_actions %>
+  <%= link_to t('publications.show.articlesbutton', :default => "Articles list"),
+                journal_publication_articles_path(@journal, @publication), :class => 'btn btn-primary' %>
+<% end %>        
+  
+</div>

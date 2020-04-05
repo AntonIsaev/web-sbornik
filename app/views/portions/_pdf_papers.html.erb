@@ -1,0 +1,80 @@
+<div class="list-group">
+  <a href="#", class="list-group-item">
+    <h4 class="list-group-item-heading">
+    <%= t('portions.pdf.papers.begin_forming', :default => t('en.portions.pdf.papers.begin_forming')) %>
+    </h4>
+  </a>  
+
+<% $errors = []
+  if global_param('auto_convert_to_pdf') == '0'
+    $errors << [t('global_params.pdf_disabled'), '', '']
+  else
+  
+  require 'prawn/measurement_extensions'
+  
+  info = {
+    :Title => "List of authors with degrees for "+@journal.title+" ("+@publication.title+")",
+    :Author => t('appname'),
+    :Subject => @journal.title,
+    :Keywords => "web-sbornik journal",
+    :Creator => "http://www.web-sbornik.ru",
+    :Producer => "Prawn",
+    :CreationDate => Time.now
+  }
+  
+  portion = @publication.portions.where('ftype = 6').first
+  
+  pdf = CombinePDF.new()
+  
+  if @publication.articles.count == 0
+    $errors << [t('portions.pdf.papers.end_error_zero_articles', :default => t('en.portions.pdf.papers.end_error_zero_articles')), @publication.title, journal_publication_path(@journal, @publication)]
+  end
+  
+  @publication.articles.each do |article|
+    @material = article.materials.first
+
+    if @material != nil 
+      if @material.checked_by_author_id == 0
+        $errors << [t('portions.pdf.papers.end_error_not_checked_by_author', :default => t('en.portions.pdf.papers.end_error_not_checked_by_author')), article.title + ' (' +article.full_authors+')', journal_publication_article_path(@journal, @publication, article)]
+      end
+    
+      if @material.checked_by_chief_id == 0 && @material.checked_by_chief_assistant_id == 0
+        $errors << [t('portions.pdf.papers.end_error_not_checked_by_chief_or_assistant', :default => t('en.portions.pdf.papers.end_error_not_checked_by_chief_or_assistant')), article.title + ' (' +article.full_authors+')', journal_publication_article_path(@journal, @publication, article)]
+      end
+      
+      if !@material.file_pdf.blank? && File.extname(@material.file_pdf.path).downcase == '.pdf'
+        pdf << CombinePDF.load(@material.file_pdf.path)
+      elsif !@material.file.blank? && File.extname(@material.file.path).downcase == '.pdf'
+        pdf << CombinePDF.load(@material.file.path)
+      else
+        $errors << [t('portions.pdf.papers.end_error_no_file', :default => t('en.portions.pdf.papers.end_error_no_file')), article.title + ' (' +article.full_authors+')', journal_publication_article_path(@journal, @publication, article)]
+      end
+    else  
+      $errors << [t('portions.pdf.papers.end_error_no_file', :default => t('en.portions.pdf.papers.end_error_no_file')), article.title + ' (' +article.full_authors+')', journal_publication_article_path(@journal, @publication, article)]
+    end  
+  end  
+
+  Dir.mktmpdir() do |dir|
+      
+  pdf_filename = '/papers.pdf'
+  pdf.save(dir + pdf_filename)
+  File.open(dir + pdf_filename) do |f|
+    portion.file = nil
+    portion.file = f
+    portion.save
+
+    reader = PDF::Reader.new(portion.file.path)
+    portion.pages_count = reader.page_count
+    portion.save
+  end  
+  end
+  end
+%>
+  <% if $errors.size == 0 %>
+    <%= link_to t('portions.pdf.papers.end_success', :default => t('en.portions.pdf.papers.end_success')), '#', :class => 'list-group-item list-group-item-success' %>
+  <% else %>
+    <% $errors.each do |error| %>
+      <%= link_to error[0]+' '+error[1], error[2], :class => 'list-group-item list-group-item-danger' %>
+    <% end %>
+  <% end %>  
+</div>
