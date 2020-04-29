@@ -5,21 +5,19 @@
 #   gem 'sqlite3'
 #
 default: &default
-  adapter: mysql2
   pool: 5
   timeout: 5000
   host: localhost
   port: 3306
   encoding: utf8
+  database: <%= ENV['WS_MYSQL_DB'] %>
+  username: <%= ENV['WS_MYSQL_USER'] %>
+  password: <%= ENV['WS_MYSQL_PASS'] %>  
 
 development:
   <<: *default
-  database: ****
-  username: ****
-  password: ****   
+  adapter: mysql2  
 
 production:
   <<: *default
-  database: ****
-  username: ****
-  password: ****
+  adapter: mysql2

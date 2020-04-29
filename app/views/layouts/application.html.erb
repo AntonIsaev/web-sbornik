@@ -39,6 +39,7 @@
   
   <body>
 
+<% if Rails.env.production? %>
 <!-- Yandex.Metrika counter -->
 <script type="text/javascript">
     (function (d, w, c) {
@@ -93,6 +94,8 @@ var s = d.getElementsByTagName(t)[0]; s.parentNode.insertBefore(j, s);
 })(document, "script", document.location.protocol);
 </script>
 <!--/Openstat-->
+
+<% end %>
 
 <nav class="navbar navbar-default">
   <div class="container-fluid">
