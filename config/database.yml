@@ -14,12 +14,12 @@ default: &default
 
 development:
   <<: *default
-  database: sbornikdev
-  username: u01
-  password: 556655665566   
+  database: ****
+  username: ****
+  password: ****   
 
 production:
   <<: *default
-  database: sbornikwork
-  username: u01
-  password: 556655665566
+  database: ****
+  username: ****
+  password: ****
